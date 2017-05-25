@@ -1,0 +1,260 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+负载均衡-Nginx深入探究
+\end_layout
+
+\begin_layout Section*
+负载均衡配置实现
+\end_layout
+
+\begin_layout Standard
+Nginx是一个反向代理服务器,其负载均衡也是基于反向代理来实现的,所以先来理解一下什么是反向代理.
+\end_layout
+
+\begin_layout Subsection
+原理图:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Nginx/图表1.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+什么是反向代理呢?
+\end_layout
+
+\begin_layout Standard
+如上图所示,当浏览器当浏览器向服务器发出url请求,nginx会检查这个uri要执行什么样的指令,也就是说要执行什么样的location指令,它根据这个loca
+tion要进行什么样的操作.如果当前这个location配置完要进行一个代理的操作,把这个请求转交个后端服务器进行操作,这个时候呢是从nginx本身来发起一个请求
+,对于这个后端服务器来说呢,nginx就是它的前台客户端,或者说它认为Nginx就是一个浏览器,后端服务器有自己的iq和端口(或者说有它自己的域名),Nginx
+是基于这个域来发给tomcat所在的域.后面的uri和前面请求的uri是一样的,也就是说这个uri拿过来,然后找到tomcat所在域中的uri,完成对tomcat
+的请求.tomcat处理完结果将结果返回给nginx,nginx将结果返回浏览器.这样就完成了我们整个处理过程.对于浏览器来说,它并不知道后端tomcat服务器的存在
+,只是觉得将请求发给nginx后得到一个相应;对于tomcat也是一样的,只是觉得有nginx这个前台客户端的存在.这就是代理的过程.
+\end_layout
+
+\begin_layout Subsection
+详细配置
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+server{
+\end_layout
+
+\begin_layout Plain Layout
+
+		listen       80;
+\end_layout
+
+\begin_layout Plain Layout
+
+        server_name  localhost;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #charset koi8-r;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #access_log  logs/host.access.log  main;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        error_log logs/error.log;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        port_in_redirect off;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        location / {
+\end_layout
+
+\begin_layout Plain Layout
+
+            root   /html;
+\end_layout
+
+\begin_layout Plain Layout
+
+            index  index.html index.htm;
+\end_layout
+
+\begin_layout Plain Layout
+
+            proxy_pass http://127.0.0.1:9000;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        error_page  404              /404.html;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        # redirect server error pages to the static page /50x.html
+\end_layout
+
+\begin_layout Plain Layout
+
+        #
+\end_layout
+
+\begin_layout Plain Layout
+
+        error_page   500 502 503 504  /50x.html;
+\end_layout
+
+\begin_layout Plain Layout
+
+        location = /50x.html {
+\end_layout
+
+\begin_layout Plain Layout
+
+            root   html;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
