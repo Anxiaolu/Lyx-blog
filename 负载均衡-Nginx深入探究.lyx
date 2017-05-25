@@ -83,8 +83,12 @@
 Nginx是一个反向代理服务器,其负载均衡也是基于反向代理来实现的,所以先来理解一下什么是反向代理.
 \end_layout
 
+\begin_layout Section
+反向代理
+\end_layout
+
 \begin_layout Subsection
-原理图:
+反向代理原理图:
 \end_layout
 
 \begin_layout Standard
@@ -111,7 +115,12 @@ tion要进行什么样的操作.如果当前这个location配置完要进行一�
 \end_layout
 
 \begin_layout Subsection
-详细配置
+反向代理详细配置
+\end_layout
+
+\begin_layout Standard
+假设本机在内网的ip是192.168.1.111,我们要通过Nginx来转发对192.168.1.111的80端口的请求到192.168.1.112的8080端口上,具体有如下配
+置:
 \end_layout
 
 \begin_layout Standard
@@ -131,7 +140,7 @@ server{
 
 \begin_layout Plain Layout
 
-        server_name  localhost;
+        server_name  www.zhishe.pub;
 \end_layout
 
 \begin_layout Plain Layout
@@ -181,7 +190,7 @@ server{
 
 \begin_layout Plain Layout
 
-            root   /html;
+            #root   /html;
 \end_layout
 
 \begin_layout Plain Layout
@@ -191,7 +200,7 @@ server{
 
 \begin_layout Plain Layout
 
-            proxy_pass http://127.0.0.1:9000;
+            proxy_pass http://192.168.1.112:8080;
 \end_layout
 
 \begin_layout Plain Layout
@@ -250,6 +259,215 @@ server{
 
 }
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样的道理,对于php的解析也是一样,用相似的方法来转发对php文档的请求.通过9000端口上的php-fpm下的php-cgi
+\end_layout
+
+\begin_layout Standard
+具体如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+location ~ 
+\backslash
+.php$
+\end_layout
+
+\begin_layout Plain Layout
+
+        {
+\end_layout
+
+\begin_layout Plain Layout
+
+            #指定为Nginx默认路径
+\end_layout
+
+\begin_layout Plain Layout
+
+            root /opt/nginx/html/wordpress;
+\end_layout
+
+\begin_layout Plain Layout
+
+			对所有php文件的访问统一交给9000端口处理
+\end_layout
+
+\begin_layout Plain Layout
+
+            fastcgi_pass  127.0.0.1:9000;
+\end_layout
+
+\begin_layout Plain Layout
+
+			默认访问
+\end_layout
+
+\begin_layout Plain Layout
+
+            fastcgi_index index.php;
+\end_layout
+
+\begin_layout Plain Layout
+
+			文件请求路径
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SCRIPT_FILENAME /opt/nginx/html$fastcgi_script_name;
+\end_layout
+
+\begin_layout Plain Layout
+
+			
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param QUERY_STRING $query_string; #请求的参数;如?app=123 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param REQUEST_METHOD $request_method; #请求的动作(GET,POST) 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param CONTENT_TYPE $content_type; #请求头中的Content-Type字段 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param CONTENT_LENGTH $content_length; #请求头中的Content-length字段。
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SCRIPT_NAME $fastcgi_script_name; #脚本名称 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param REQUEST_URI $request_uri; #请求的地址不带参数 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param DOCUMENT_URI $document_uri; #与$uri相同。 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param DOCUMENT_ROOT $document_root; #网站的根目录。在server配置中root指令中指定的值
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SERVER_PROTOCOL $server_protocol; #请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param GATEWAY_INTERFACE CGI/1.1;#cgi 版本 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SERVER_SOFTWARE nginx/$nginx_version;#nginx 版本号，可修改、隐藏
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param REMOTE_ADDR $remote_addr; #客户端IP 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param REMOTE_PORT $remote_port; #客户端端口 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SERVER_ADDR $server_addr; #服务器IP地址 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SERVER_PORT $server_port; #服务器端口 
+\end_layout
+
+\begin_layout Plain Layout
+
+			fastcgi_param SERVER_NAME $server_name; #服务器名，域名在server配置中指定的server_name
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+            include fastcgi.conf;
+\end_layout
+
+\begin_layout Plain Layout
+
+            include fastcgi_params;
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+负载均衡
+\end_layout
+
+\begin_layout Subsection
+负载均衡原理图:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/huanlu/图片/DIA/Nginx负载均衡图解.png
+	lyxscale 20
+	scale 30
 
 \end_inset
 
