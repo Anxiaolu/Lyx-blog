@@ -93,7 +93,7 @@ Nginx是一个反向代理服务器,其负载均衡也是基于反向代理来�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Nginx/图表1.png
+	filename imgs/Nginx/Nginx反向代理.png
 	scale 50
 
 \end_inset
@@ -472,6 +472,369 @@ location ~
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+负载均衡的实验原理类似于反向代理的设置.如上图,如果后端之后一个服务器那么nginx的作用就是一个只是起到了一个反向代理的作用,如果后端有多个服务器,那么一个请求
+到达Nginx就会按照一定策略来决定当前的请求发给其中的某一个;如果有多个请求进来的时候,多个请求会按照策略分发到不同的服务器上,多个服务器分担了来自前台的请求.
+最后就这样多个后端服务器分担了前端的负载,达到了我们所说的负载均衡.所以说负载均衡的具体实现是:首先我们有多个服务器形成的服务器组,然后Nginx通过反向代理将请
+求转发到服务器组上,其中分配策略是通过Nginx内部配置来实现的.所以说负载均衡要设置的是这三层的概念.
+\end_layout
+
+\begin_layout Subsection
+具体实现步骤
+\end_layout
+
+\begin_layout Subsubsection
+服务器组的基本设置以及基本的轮询式均衡策略:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+http{
+\end_layout
+
+\begin_layout Plain Layout
+
+	upstream tomcats{
+\end_layout
+
+\begin_layout Plain Layout
+
+		service 192.168.1.61:8080;
+\end_layout
+
+\begin_layout Plain Layout
+
+		service 192.168.1.62:8080;
+\end_layout
+
+\begin_layout Plain Layout
+
+		service 192.168.1.62:8080;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	server{
+\end_layout
+
+\begin_layout Plain Layout
+
+		index index.html index.htm index.php;
+\end_layout
+
+\begin_layout Plain Layout
+
+		proxy_pass http://tomcats; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过如上的配置我们就定义好了一个服务器组.对应之前的反向代理的转发路径也要进行修改.根据上面的默认配置,当前的发送的一个请求转发的tomcats服务器组,我们什么也
+没填,他就是一个平均的转发策略,每个服务器接受一个请求,依次轮询.
+\end_layout
+
+\begin_layout Subsubsection
+upstream里面设置server的其他常用参数
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+upstream backends{
+\end_layout
+
+\begin_layout Plain Layout
+
+	#均衡策略
+\end_layout
+
+\begin_layout Plain Layout
+
+	#none 轮询(权重由weight来决定)
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	#ip_hash
+\end_layout
+
+\begin_layout Plain Layout
+
+		当用户发送一个请求,它会把客户端的ip地址进行一个hash运算,然后根据得到的值把它分配在一个服务器上.下次该用户再次访问的时候,用户的IP没有变,对应的ha
+sh算法的没有变,用户还是在之前的服务器上.最终会出现这么一个类似的结果,某个用户被粘在这一台服务器上,除非该服务器挂掉,否则,该用户访问总是这一台服务器.当有多个
+用户的时候,就通过hash算法将多个用户平均分配到多个服务器上,这就是ip_hash的作用.然而这种方式会让权重设置失效,因为该种方式是适合于数据量比较大的情况下
+,最终会完成一个平均分布,因此设置权重是没有意义的.
+\end_layout
+
+\begin_layout Plain Layout
+
+用法是直接加到服务器组上,对应的一组服务器都是用的ip_hash的策略.
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	第三方策略
+\end_layout
+
+\begin_layout Plain Layout
+
+	#fair:自己管理后端服务器的权重,谁的响应能力强,谁的权重就高.动态地根据后端的负载来判断,所以说这是一个比较人性化的负载均衡策略.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#url_hash：类比ip_hash,这里是将url进行hash运算绑定.同一个url定位到同一个服务器上，不同的url定位到不同的服务器上.
+\end_layout
+
+\begin_layout Plain Layout
+
+	这个比较适合用于电子商务网站，有大量的商品信息，所有的商品通过静态化形成了静态页面，然后我们的服务器通过缓存的方式，把相应的静态页面按照命中率高的放到缓存里来
+加快访问的速度，也就是说实现了一个基于缓存的服务器，这个时候我们使用url_hash就是一个比较适合的场景.为什么这么说呢，每一个商品都有一个唯一的url，同一个
+商品不管哪个用户来访问，它的url是相同的，所以说它的url_hash值也是相同的，通过这样的url_hash策略，不管哪个用户访问都到相同的服务器上来获取信息
+，有多个服务器就缓存了多个不同的商品，一旦相同的商品，hash值会映射到相同的服务器上，另外的服务器会不加载该商品.所以说大量不同的商品分别在不同的服务器上缓存起
+来，达到平均把缓存平均负载到后端服务器上的目的.这个时候呢通过url_hash的策略就会加快访问的速度。
+\end_layout
+
+\begin_layout Plain Layout
+
+用法同ip_hash，因为是第三方策略，所以说默认的策略中是没有的，具体见下面第三小节。
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	#weight:权重,值越高负载越大;
+\end_layout
+
+\begin_layout Plain Layout
+
+	#当服务器的为如第一小节所示的配置的时候,所有的服务器的权重都是一样的.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#假如有一台服务器如下64的,它的性能比起62,63两台服务器高很多
+\end_layout
+
+\begin_layout Plain Layout
+
+	#,如果还是用之前的均衡策略显然不适合,所用通过weight来增加它的权重.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#如下设置,64的权重为5,另外两个为1,所以64占整个所有请求的5/7,另外两个各占1/7.
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.62:8080;
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.63;
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.64 weight=5;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	#backup:备份机,只有在所有的正在工作的服务器都挂掉之后才会启用
+\end_layout
+
+\begin_layout Plain Layout
+
+	#,来起到临时备用的作用.正常情况下是不会参与均衡的负载.
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.65 backup;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	#down:停机标志,不会被访问.设有该标志的服务器是停止的
+\end_layout
+
+\begin_layout Plain Layout
+
+	#,无论什么情况下都不会把请求发送到这里.										
+\end_layout
+
+\begin_layout Plain Layout
+
+	#(尤其是当你要对该服务器进行硬件的更换或者出现临时状况要进行修复需要该参数,
+\end_layout
+
+\begin_layout Plain Layout
+
+	如果不进行该设置而是直接关停对应的服务器,
+\end_layout
+
+\begin_layout Plain Layout
+
+	#请求还是认为该机器是可以访问的,就会不停地尝试访问这台服务器,
+\end_layout
+
+\begin_layout Plain Layout
+
+	#得到一个错误的结果,造成整个请求时间上的浪费.所以它就是我们临时维护时候的一个停机标志.)
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.66 down;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	#max_fails:达到指定次数认为服务器挂掉;
+\end_layout
+
+\begin_layout Plain Layout
+
+	#fail_timeout:挂掉之后多久再去测试是否已经恢复;
+\end_layout
+
+\begin_layout Plain Layout
+
+	#默认情况下,每个服务器都会有该项配置,只是不是显示配置的时候都是默认值.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#如下配置,假设当它发生了故障之后,请求发到67的时候,没有响应
+\end_layout
+
+\begin_layout Plain Layout
+
+	#,它并不认为67已经挂掉了,而是第二次到达之后还是没有收到响应.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#此时才将该台ip为67的服务器标记为失败的状态.在失败的期间内,请求是不会发送到67.
+\end_layout
+
+\begin_layout Plain Layout
+
+	#对应的失败期间的时长就是我们的另一个参数,file_timeout.
+\end_layout
+
+\begin_layout Plain Layout
+
+	server 192.168.1.67 Imax_fails=2 fail_timeout=60s;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+对应的第三方策略的下载安装
+\end_layout
+
+\begin_layout Standard
+以fair为例：
+\end_layout
+
+\begin_layout Standard
+下载如下安装包：
+\end_layout
+
+\begin_layout Standard
+nginx-upstream-fair-master.zip
+\end_layout
+
+\begin_layout Standard
+解压之后会有两个文件：config ngx_http_-upstream_fair-master.c
+\end_layout
+
+\begin_layout Standard
+安装方式是在nginx源码编译安装的时候一块编译的，对应的方式(两道短横线)：
+\end_layout
+
+\begin_layout Standard
+./configure –prefix=/opt/nginx –add-module=/tmp/nginx-upstream-fair-master
+\end_layout
+
+\begin_layout Standard
+如果是第一次安装nginx 接着:make && make install
+\end_layout
+
+\begin_layout Standard
+到objs查看编译结果,把nginx的二进制文件替换之前的sbin目录下的原来的文件,然后再启动.
+\end_layout
+
+\begin_layout Standard
+对应的url_hash也是一样.
 \end_layout
 
 \end_body
