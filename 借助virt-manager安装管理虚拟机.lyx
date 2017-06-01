@@ -1,0 +1,254 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+借助virt-manager安装管理虚拟机
+\end_layout
+
+\begin_layout Section
+准备要使用的镜像
+\end_layout
+
+\begin_layout Paragraph*
+针对镜像,之前一直都是用的国外的资源,下载起来十分耗费时间,今天老师推荐了几个不错的国内的镜像资源,下载起来速度简直超爽.
+\end_layout
+
+\begin_layout Enumerate
+mirrors.ustc.edu.cn (中科大的,速度最快) 
+\end_layout
+
+\begin_layout Enumerate
+mirrors.163.com 
+\end_layout
+
+\begin_layout Enumerate
+mirrors.aliyun.com 
+\end_layout
+
+\begin_layout Paragraph*
+注意下载时要根据自己的需求选择适合的,我这次是使用的Centos的镜像.
+\end_layout
+
+\begin_layout Section
+安装virt-manager
+\end_layout
+
+\begin_layout Paragraph
+Ubuntu直接apt-get virt-manager可以安装.
+\end_layout
+
+\begin_layout Paragraph
+需要注意的两点:
+\end_layout
+
+\begin_layout Enumerate
+这里需要说一下的是,只安装完virt-manager是无法使用的,在启动后会报错,具体没有截图.在安装完kvm之后便可以正常使用.
+\end_layout
+
+\begin_layout Enumerate
+接下来还有一步要做的是修改/var/run/libvirt/libvirt-sock文件的权限,不然提示出错,无法使用.
+\end_layout
+
+\begin_layout Section
+创建虚拟机
+\end_layout
+
+\begin_layout Subsection
+点击左上角生成新虚拟机
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual.png
+	lyxscale 75
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般情况估计都是直接下载iso文件,导入的方式来安装,所以一般选择第一种方式.当然如果之前是用qemu安装的,可以选择导入现有的磁盘影像,即第四项.
+\end_layout
+
+\begin_layout Subsection
+选择对应的iso镜像文件进入
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual2.png
+	lyxscale 75
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual3.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+进行虚拟机的内存和CPU设置以及磁盘空间大小的分配
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual4.png
+	lyxscale 75
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual5.png
+	lyxscale 75
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在进行虚拟磁盘分配的时候,最好是放到自己家目录下面一个专有的空间,不然按照默认设置会放到/var/lib/libvirt/images目录下,会因为权限问题引起
+很多麻烦.因此选择第二项,Select or create custom sortage,如下图(这个是已经创建好的,具体创建界面在下面).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual6.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual7.png
+	lyxscale 75
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+安装虚拟机
+\end_layout
+
+\begin_layout Standard
+按照上步完成之后,选择要安装的对应卷,点击右下角的选择卷,设置好名称和网络链接方式,这里用的是桥接主机网络的方式.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Virt-manager/KVM-newvirtual8.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+点击完成之后便进入到了安装界面,和正常的系统安装步骤一样.
+\end_layout
+
+\begin_layout Section
+参考文章:
+\end_layout
+
+\begin_layout Standard
+http://softlab.sdut.edu.cn/blog/subaochen/2016/04/使用virt-manager安装和管理虚拟机
+\end_layout
+
+\end_body
+\end_document
