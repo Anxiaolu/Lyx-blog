@@ -1,0 +1,126 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+CentOS源码编译更换gcc版本
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+之前编译qt的一个项目的时候,换到刚安装完的Centos6.8的虚拟机环境下编译,一直出现如下错误,如图:
+\begin_inset Graphics
+	filename imgs/C++/qt-gcc-versionerror.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/C++/Centos6.8-default-gccversion.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过仔细查资料,是gcc版本过低导致的,因为Centos6.8默认的gcc4.4.7的版本是无法编译C++11的,所以要想解决,就要更换高版本的gcc.
+\end_layout
+
+\begin_layout Section
+下载安装gcc高版本
+\end_layout
+
+\begin_layout Standard
+我这里下载的是6.1的版本(源码可以去mirrors.ustc.edu.cn官网去找).
+\end_layout
+
+\begin_layout Subsection
+下载完成之后解压.
+\end_layout
+
+\begin_layout Subsection
+以下是编译的具体
+\end_layout
+
+\end_body
+\end_document
