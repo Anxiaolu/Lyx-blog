@@ -141,5 +141,102 @@ Session复制(有容错功能的方案)
 是性能的低下甚至会造成一些列的故障.
 \end_layout
 
+\begin_layout Standard
+Sessionfuzhi的实现:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=XML,basicstyle={\footnotesize},breaklines=true,tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+在tomcat中的server.xml文档中(最后一个connector里的engine模块里,有注释提示)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<!-- 基于网络广播的策略,一个节点session变换,其他节点同步复制,节点多或者数据量大时功能性能低下-->
+\end_layout
+
+\begin_layout Plain Layout
+
+	<Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster">
+\end_layout
+
+\begin_layout Plain Layout
+
+        <!--网络通道对象-->
+\end_layout
+
+\begin_layout Plain Layout
+
+		<Channel className="org.apache.catalina.tribes.group.GroupChannel">
+\end_layout
+
+\begin_layout Plain Layout
+
+			<!--接收器对象-->
+\end_layout
+
+\begin_layout Plain Layout
+
+        	<Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+ address="auto"
+\end_layout
+
+\begin_layout Plain Layout
+
+				port="4000"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        </Channel>
+\end_layout
+
+\begin_layout Plain Layout
+
+	</Cluster>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+在tomcat7以后,server.xml取消Cluster这行注释之后表示tomcat开启了集群功能.tomcat的集群功能配备了发送器,接收器,内容转换器,还有
+各种监听借口,事件显示器等一系列功能.以上是在tomcat中的要进行修改的,对应的在开发的应用中要在web.xml中添加<distributable/>这么一条配置
+选项,位置如下图.添加完这两项配置后,这个应用就有了session复制的功能了.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Nginx/Nginx-session-on_error.png
+	lyxscale 50
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+补充:
+\end_layout
+
+\begin_layout Paragraph*
+需要说明的是,因为在一台服务器上可能不止有一个tomcat,在配置参数的时候,不要使用默认参数,要自行进行手动配置.首先要考虑的就是端口冲突问题.比如上方的示例,如
+果一台服务器上有两个tomcat,默认指定不同端口.地址也是一样,因为开启该项功能,如果设置的是auto,会自动选择,如果选择错了,那么也就不能进行.通常服务器有两
+个网卡,一个是内网网卡,一个是外网的,我们的接收器是绑定在内网上的.因为我们的服务器集群是在内网的,所以接收器自然绑定的是内网的网卡,如果绑错了就会接收不到消息.
+\end_layout
+
 \end_body
 \end_document
