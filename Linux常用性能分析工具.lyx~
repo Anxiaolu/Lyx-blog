@@ -181,7 +181,7 @@ swap:虚拟内存使用情况(单位KB)
 \end_layout
 
 \begin_layout Quotation
-free:空闲的内存
+swap:空前的内存
 \end_layout
 
 \begin_layout Quotation
