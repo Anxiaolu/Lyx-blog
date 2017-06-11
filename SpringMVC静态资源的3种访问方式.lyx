@@ -1,0 +1,265 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+转:SpringMVC项目中静态资源的3种访问方式
+\end_layout
+
+\begin_layout Section
+引文
+\end_layout
+
+\begin_layout Standard
+因为在正常的spirng项目中,DispatcherServlet一般的定义为对项目根目录的拦截,所以当访问类似的*.js,*.jpg静态资源的时候也会被拦截,这样
+浏览器会认为你是发起了一个动作请求,而不是静态资源请求.当然,如果你是使用的*.do的方式就不存在找不到静态资源的问题了.
+\end_layout
+
+\begin_layout Section
+解决方案
+\end_layout
+
+\begin_layout Subsection
+方案一:激活Tomcat的default-servlet来处理静态文件
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<servlet-mapping>     
+\end_layout
+
+\begin_layout Plain Layout
+
+    <servlet-name>default</servlet-name>    
+\end_layout
+
+\begin_layout Plain Layout
+
+    <url-pattern>*.jpg</url-pattern>       
+\end_layout
+
+\begin_layout Plain Layout
+
+</servlet-mapping>      
+\end_layout
+
+\begin_layout Plain Layout
+
+<servlet-mapping>         
+\end_layout
+
+\begin_layout Plain Layout
+
+    <servlet-name>default</servlet-name>      
+\end_layout
+
+\begin_layout Plain Layout
+
+    <url-pattern>*.js</url-pattern>      
+\end_layout
+
+\begin_layout Plain Layout
+
+</servlet-mapping>      
+\end_layout
+
+\begin_layout Plain Layout
+
+<servlet-mapping>          
+\end_layout
+
+\begin_layout Plain Layout
+
+    <servlet-name>default</servlet-name>         
+\end_layout
+
+\begin_layout Plain Layout
+
+    <url-pattern>*.css</url-pattern>        
+\end_layout
+
+\begin_layout Plain Layout
+
+</servlet-mapping>      
+\end_layout
+
+\begin_layout Plain Layout
+
+要配置多个，每种文件配置一个
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+要注意的是,要写在DispatcherServlet的前面,让defaultServlet先拦截,如果写在后面的话就没有作用了.
+\end_layout
+
+\begin_layout Standard
+还有不同的容器方式也不一样
+\end_layout
+
+\begin_layout Quote
+Tomcat, Jetty, JBoss, and GlassFish 默认 Servlet的名字 -- "default"
+\end_layout
+
+\begin_layout Quote
+Google App Engine 默认 Servlet的名字 -- "_ah_default"
+\end_layout
+
+\begin_layout Quote
+Resin 默认 Servlet的名字 -- "resin-file"
+\end_layout
+
+\begin_layout Quote
+WebLogic 默认 Servlet的名字 -- "FileServlet"
+\end_layout
+
+\begin_layout Quote
+WebSphere 默认 Servlet的名字 -- "SimpleFileServlet" 
+\end_layout
+
+\begin_layout Subsection
+方案二:在Spring3.0.4版本以后使用提供的<mvc:resources>
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<mvc:resources mapping="/images/**" location="/images/" /> 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似的其他静态资源的就不一一举出
+\end_layout
+
+\begin_layout Standard
+如果出现下面的错误，可能是没有配置<mvc:annotation-driven />的原因。 报错WARNING: No mapping found
+ for HTTP request with URI [/mvc/user/findUser/lisi/770] in DispatcherServlet
+ with name 'springMVC'
+\end_layout
+
+\begin_layout Subsection
+方案三 :使用<mvc:default-servlet-handler/>
+\end_layout
+
+\begin_layout Standard
+会把"/**" url,注册到SimpleUrlHandlerMapping的urlMap中,把对静态资源的访问由HandlerMapping转到org.spri
+ngframework.web.servlet.resource.DefaultServletHttpRequestHandler处理并返回.DefaultServlet
+HttpRequestHandler使用就是各个Servlet容器自己的默认Servlet.
+\end_layout
+
+\begin_layout Standard
+补充说明：多个HandlerMapping的执行顺序问题：
+\end_layout
+
+\begin_layout Standard
+DefaultAnnotationHandlerMapping的order属性值是：0
+\end_layout
+
+\begin_layout Standard
+<mvc:resources/ >自动注册的 SimpleUrlHandlerMapping的order属性值是： 2147483646
+\end_layout
+
+\begin_layout Standard
+<mvc:default-servlet-handler/>自动注册 的SimpleUrlHandlerMapping 的order属性值是：
+ 2147483647
+\end_layout
+
+\begin_layout Standard
+spring会先执行order值比较小的。当访问一个a.jpg图片文件时，先通过 DefaultAnnotationHandlerMapping
+ 来找处理器，一定是找不到的，我们没有叫a.jpg的Action。再按order值升序找，由于最后一个 SimpleUrlHandlerMapping
+ 是匹 "/**"的，所以一定会匹配上，再响应图片。
+\end_layout
+
+\begin_layout Standard
+转自:http://blog.csdn.net/cq1982/article/details/44101761
+\end_layout
+
+\end_body
+\end_document

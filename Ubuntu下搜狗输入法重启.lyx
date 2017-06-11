@@ -1,0 +1,159 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Ubuntu下搜狗输入法重启
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+在Windows上用的比较不错的,本着对它的信任,在Ubuntu上继续使用,然而出现各种bug,最近又是出现有时卡死的情况.然而本着专治它的各种不服的心态,找出了
+两种解决办法.话不多说,供上法子:
+\end_layout
+
+\begin_layout Section
+解决方法
+\end_layout
+
+\begin_layout Subsection
+第一种
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+fcitx | xargs kill
+\end_layout
+
+\begin_layout Plain Layout
+
+sogou-qimpanel | xargs kill
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+第二种
+\end_layout
+
+\begin_layout Standard
+就是用脚本的方式,在/usr/bin下,编写restart_sougou.sh.别忘了更改运行权限,然后就能在终端一条命令搞定.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#!/bin/sh
+\end_layout
+
+\begin_layout Plain Layout
+
+pidof fcitx | xargs kill
+\end_layout
+
+\begin_layout Plain Layout
+
+pidof sogou-qimpanel | xargs kill
+\end_layout
+
+\begin_layout Plain Layout
+
+nohup fcitx  1>/dev/null 2>/dev/null &
+\end_layout
+
+\begin_layout Plain Layout
+
+nohup sogou-qimpanel  1>/dev/null 2>/dev/null &
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
