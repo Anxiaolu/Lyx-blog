@@ -1,0 +1,301 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+数据连接池原理
+\end_layout
+
+\begin_layout Section
+日常
+\end_layout
+
+\begin_layout Standard
+之前就听老鸟们说,数据库连接资源是稀缺资源,加上自己之前用的是jdbc或者是orm框架在自己电脑上测试者玩,对这一方面没有什么大的概念.在学spring时,接触到
+集中数据源的配置,在这里稍微说一下关于数据源的事,
+\end_layout
+
+\begin_layout Section
+使用连接池的原因
+\end_layout
+
+\begin_layout Subsection
+Jdbc Demo
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//第一步，注册驱动程序  
+\end_layout
+
+\begin_layout Plain Layout
+
+//com.MySQL.jdbc.Driver  
+\end_layout
+
+\begin_layout Plain Layout
+
+Class.forName("数据库驱动的完整类名");
+\end_layout
+
+\begin_layout Plain Layout
+
+//第二步，获取一个数据库的连接  
+\end_layout
+
+\begin_layout Plain Layout
+
+Connection conn = DriverManager.getConnection("数据库地址","用户名","密码");    
+\end_layout
+
+\begin_layout Plain Layout
+
+//第三步，创建一个会话  
+\end_layout
+
+\begin_layout Plain Layout
+
+Statement stmt=conn.createStatement();   
+\end_layout
+
+\begin_layout Plain Layout
+
+//第四步，执行SQL语句  
+\end_layout
+
+\begin_layout Plain Layout
+
+stmt.executeUpdate("SQL语句");  
+\end_layout
+
+\begin_layout Plain Layout
+
+//或者查询记录  
+\end_layout
+
+\begin_layout Plain Layout
+
+ResultSet rs = stmt.executeQuery("查询记录的SQL语句");  
+\end_layout
+
+\begin_layout Plain Layout
+
+//第五步，对查询的结果进行处理  
+\end_layout
+
+\begin_layout Plain Layout
+
+while(rs.next()){  
+\end_layout
+
+\begin_layout Plain Layout
+
+//操作  
+\end_layout
+
+\begin_layout Plain Layout
+
+}  
+\end_layout
+
+\begin_layout Plain Layout
+
+//第六步，关闭连接  
+\end_layout
+
+\begin_layout Plain Layout
+
+rs.close();  
+\end_layout
+
+\begin_layout Plain Layout
+
+stmt.close();  
+\end_layout
+
+\begin_layout Plain Layout
+
+conn.close();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于以上代码,估计学过jdbc的都不陌生,是初学jdbc时最熟悉的代码了.现在大多数时候用到的ORM框架,底层还是像上面的代码一样,只是做了封装而已.这种方式的不足
+之处在于在进行数据交互的时候,都要新建连接资源,用完之后再关闭,这种方式是十分浪费资源的.方然有的人会觉得,jdbc用着多简单啊,我的配置足够好,一点也不担心.当然
+,这是能够烧钱玩得起的,但也是不明智的.
+\end_layout
+
+\begin_layout Standard
+对于这种数据连接资源来说,在小项目中完全体验不出有什么差别,当交互的频率达到一定程度之后,你就会有所察觉.在现在许多大型电商网站,尤其是赶上大促销的时候,同时上万
+,几十万几百万在线也不是不可能(例子肯定是淘宝,京东了).在这种情况下,数据链接资源对整个系统的影响很大,可以说是影响电商网站发展的瓶颈.
+\end_layout
+
+\begin_layout Subsection
+那么为什么用连接池呢?
+\end_layout
+
+\begin_layout Standard
+为什么在连接数据库时要使用连接池？ 数据库连接是一种关键的有限的昂贵的资源，一个数据库连接对象均对应一个物理数据库连接，每次操作都打开一个物理连接，使用完都关闭
+连接，这样造成系统的性能低下。
+\end_layout
+
+\begin_layout Standard
+数据库连接池的解决方案是在应用程序启动时建立足够的数据库连接，并将这些连接组成一个连接池，简单的说，就是在一个"池"里放了好多半成品的数据库连接对象，由应用程序
+动态地对池中的连接进行申请、使用和释放等操作。
+\end_layout
+
+\begin_layout Standard
+连接池技术尽可能多地重用了消耗内存地资源，大大节省了内存，提高了服务器的服务效率，减少了程序与数据库交互时的部分开销，显著的改善应用程序的性能，通过使用连接池，
+提高了程序运行效率，同时，我们可以通过其自身的管理机制来监视数据库连接的数量、使用情况等.
+\end_layout
+
+\begin_layout Section
+连接池工作原理
+\end_layout
+
+\begin_layout Standard
+核心思想:数据连接的复用(资源重用).
+\end_layout
+
+\begin_layout Standard
+原理图如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/JDBC/datapool.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+连接池的创建.一般在系统初始化的时候,连接池就会根据系统配置建立,并在池中创建了几个连接对象,使得能够从池中及时取出.
+\end_layout
+
+\begin_layout Enumerate
+连接管理.对于连接池的管理是连接池机制的核心,连接池内链接的分配和释放对系统会有较大影响.
+\end_layout
+
+\begin_layout Enumerate
+连接池的关闭.当应用程序退出的时候,关闭连接池中所有的链接,释放相关资源,过程与创建相反.
+\end_layout
+
+\begin_layout Section
+流行的连接池技术
+\end_layout
+
+\begin_layout Enumerate
+C3P0是一个开放源代码的JDBC连接池，它在lib目录中与Hibernate一起发布,包括了实现jdbc3和jdbc2扩展规范说明的Connection
+ 和Statement 池的DataSources 对象。
+\end_layout
+
+\begin_layout Enumerate
+DBCP （Database Connection Pool）是一个依赖Jakarta commons-pool对象池机制的数据库连接池，Tomcat的数据源使
+用的就是DBCP。目前 DBCP 有两个版本分别是 1.3 和 1.4。1.3 版本对应的是 JDK 1.4-1.5 和 JDBC 3，而1.4 版本对应
+ JDK 1.6 和 JDBC 4。因此在选择版本的时候要看看你用的是什么 JDK 版本了，功能上倒是没有什么区别。
+\end_layout
+
+\begin_layout Enumerate
+Proxool是一个Java SQL Driver驱动程序，提供了对你选择的其它类型的驱动程序的连接池封装。可以非常简单的移植到现存的代码中。完全可配置。快速，
+成熟，健壮。可以透明地为你现存的JDBC驱动程序增加连接池功能
+\end_layout
+
+\begin_layout Enumerate
+Druid是阿里开源的一个数据库连接池技术，号称是目前最好的数据库连接池，在功能、性能、扩展性方面，都超过其他数据库连接池，包括DBCP、C3P0、BoneCP
+、Proxool、JBoss DataSource。Druid已经在阿里巴巴部署了超过600个应用，经过一年多生产环境大规模部署的严苛考验。
+\end_layout
+
+\begin_layout Standard
+对比下来一看,貌似是druid是最厉害的,所以在学Spring时选择了它.因为Druid是在目前市面上流行的连接池技术的基础上开发出来的，你有的Druid有，你没
+有的Druid也能提供，Druid不仅仅是一个高效可管理的数据库连接池，它还有一套基于Filter－Chain模式的插件体系，也内置SQLParser功能，同时
+还能监控数据库访问性能，可以作为监控来使用，总结起来就是高效、功能强大、可扩展性好.
+\end_layout
+
+\begin_layout Standard
+参考http://blog.csdn.net/tuke_tuke/article/details/51532510
+\end_layout
+
+\end_body
+\end_document
