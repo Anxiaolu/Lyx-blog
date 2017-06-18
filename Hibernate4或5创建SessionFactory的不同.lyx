@@ -89,6 +89,30 @@ ssionfactory的方式不同导致的.所以在这里来区分一下4/5版本和�
 \end_layout
 
 \begin_layout Standard
+首先默认的都是先读取配置文件
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Configuration configuration = new Configuration().configure();①
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里稍微说一下吧.首先创建Configuration对象(主要方式见①处).默认情况下hibernate回去classpath下加载hibernate.cfg.xml文
+件,如果你没有采用默认的配置文件名,那么你就要在configurate()方法里带上你的路径和配置文件名,如/config/aa.xml.
+\end_layout
+
+\begin_layout Standard
 4.0之前的版本
 \end_layout
 
@@ -99,16 +123,7 @@ status open
 
 \begin_layout Plain Layout
 
-Configuration configuration = new Configuration().configure();  
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-SessionFactory sessionFactory = configuration.buildSessionFactory();  
+  SessionFactory sessionFactory = configuration.buildSessionFactory();  
 \end_layout
 
 \end_inset
@@ -124,16 +139,6 @@ SessionFactory sessionFactory = configuration.buildSessionFactory();
 \begin_inset listings
 inline false
 status open
-
-\begin_layout Plain Layout
-
-Configuration configuration = new Configuration().configure();①
-\end_layout
-
-\begin_layout Plain Layout
-
-          
-\end_layout
 
 \begin_layout Plain Layout
 
@@ -168,11 +173,6 @@ SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistr
 \end_layout
 
 \begin_layout Standard
-这里稍微说一下吧.首先创建Configuration对象(主要方式见①处).默认情况下hibernate回去classpath下加载hibernate.cfg.xml文
-件,如果你没有采用默认的配置文件名,那么你就要在configurate()方法里带上你的路径和配置文件名,如/config/aa.xml.
-\end_layout
-
-\begin_layout Standard
 在4.0之后引入的新特性–Service Register机制信息量有点大,直接给个链接吧:
 \end_layout
 
@@ -185,6 +185,49 @@ target "http://planet.jboss.org/post/hibernate_orm_service_registry"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+4.3.0之后到5的版本
+\end_layout
+
+\begin_layout Standard
+不采用Serviceregister,
+\end_layout
+
+\begin_layout Standard
+取而代之的是:StandardServiceRegistryBuilder
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+StandardServiceRegistry standardServiceRegistry = new StandardServiceRegistryBui
+lder() 
+\end_layout
+
+\begin_layout Plain Layout
+
+.applySettings(conf.getProperties()).build();
+\end_layout
+
+\begin_layout Plain Layout
+
+SessionFactory sessionFactory = conf .buildSessionFactory(standardServiceRegistry
+);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+总结:其实创建sessionfactroy的方式很多,常用的还是根据xml文件来的,所以暂时只从xml文件配置来讲.
 \end_layout
 
 \end_body
