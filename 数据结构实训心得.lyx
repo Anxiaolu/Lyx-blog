@@ -1,0 +1,184 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+数据结构实训心得
+\end_layout
+
+\begin_layout Section
+引言
+\end_layout
+
+\begin_layout Standard
+在最近几天,一直再用c语言来进行数据结构的实训,实训的内容是用一个多叉树来实现家谱图.在之前大一学习数据结构和这学期的数据结构课上的时候,只是单纯地学了学它的实现
+原理和算法,没有注重具体的代码实现.这对于学习计算机这类课程来说,是一种错误的方式.因为计算机一类的课程,本来就是很注重实践的.没有自己亲自动脑思考过写过,你说你学过
+数据结构,完全不现实.而且让你自己也觉得不踏实.
+\end_layout
+
+\begin_layout Section
+过程
+\end_layout
+
+\begin_layout Standard
+在实训的过程中,因为学习过c++和java,渐渐的抛弃之前用c语言那样完全按照流程式的方式来完成方法功能,想想确实是不明智的.在高耦合状态下的代码,要是修改起来,
+可能会将整个方法重写,浪费时间.如果按照面向对象一类语言的方式来考虑写法,你就完全不会想刚学完c语言的人写的代码一样,按照功能来划分,按需返回.
+\end_layout
+
+\begin_layout Standard
+另一方面,在实训过程中,结构体的定义方面也有不少考虑的地方,对于这次的实训,我是将配偶节点和孩子节点放到了一块:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+typedef  struct TreeNode 
+\end_layout
+
+\begin_layout Plain Layout
+
+{  
+\end_layout
+
+\begin_layout Plain Layout
+
+    int  Num;                     // 孩子数目
+\end_layout
+
+\begin_layout Plain Layout
+
+    char Name[20];					// 名字
+\end_layout
+
+\begin_layout Plain Layout
+
+    char Sex;                      // 性别 男M女F
+\end_layout
+
+\begin_layout Plain Layout
+
+    struct TreeNode * NextNode[20];   //（孩子节点） 
+\end_layout
+
+\begin_layout Plain Layout
+
+    struct TreeNode * Parent;         // 祖先节点
+\end_layout
+
+\begin_layout Plain Layout
+
+}TreeNode;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其实刚开始没有这么想,因为按照一般的思路,肯定是将配偶节点类似于父母节点一样单独拿出来.但是这样的话,会在结构体又多出一个指针.不烦如此,在表示当前节点和配偶节点的
+孩子节点的时候,两个节点你都要进行关联,这杨做会让你有种很错乱的感觉.如果像这样将配偶节点放到孩子节点里面,作为孩子节点集合的第一个.在表示于孩子节点之间的关系的时
+候,尤其是通过配偶节点来查询和显示孩子节点的时候,我们可以通过查询的配偶节点的配偶(这样说可能有点绕口,见下图).这样做之前要注意的是,在树中配偶节点的创建时,别
+忘了将配偶节点也反向绑定在当前节点上,不然遍历和查询的时候会出错.
+\end_layout
+
+\begin_layout Standard
+举例:通过儿媳一节点查询孙子一节点就要通过儿子一节点来.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/DataStructure/family.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+心得总结
+\end_layout
+
+\begin_layout Standard
+其实,在用代码写一个具体的东西的时候,不能是像当初学习时的那种心态–只是实现当前功能明白原理就可以的,必须自己新身经历一遍,具体细节思考,亲自动手写写.可以先从常
+规思路出发,期间不断寻求更加快捷高效的方式来改进.还有不管用的是面向对象的语言还是面向过程的语言,在考虑问题的大方向上是一致的,要根据具体语言的特点来对应进行变换.
+将代码的功能尽量细分,按照功能来区分.类比于面向借口的思想.在完成整个系统的框架之后,按功能来一步步实现.以上就是在实训过程中的体会.
+\end_layout
+
+\end_body
+\end_document

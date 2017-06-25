@@ -1,0 +1,265 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+技术文档写作规范
+\end_layout
+
+\begin_layout Section
+引言
+\end_layout
+
+\begin_layout Standard
+如果作为一名软件开发工程师,要学的东西不单单只是回敲代码这么简单的,其实也是挺需要语言天赋的.如果自己的语言表达能力不够的话,对他人的表述不能充分理解,同样的,自
+己也不能准确的表达自己的想法.而这次我想聊的是与之有关的关于技术文档的写作表达的问题.
+\end_layout
+
+\begin_layout Standard
+在英语的世界里,文档非常受重视,许多公司和组织都有着自己的文档规范(当然不要只以为敲代码有编码规范),MailChimp、Apple、Yahoo、Docker、
+Struts等等(维基百科有完整清单).相比之下,中文的也有,但是大都不太令人满意,要么你太简单,要么不太适用.
+ 一位大佬简单整理的一份
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/ruanyf/document-style-guide"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "中文技术文档写作规范"
+target "https://github.com/ruanyf/document-style-guide"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+举例
+\end_layout
+
+\begin_layout Itemize
+若果使用了被动语态,应该考虑改为主动语态
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误:假如此软件尚未安装.
+ 
+\end_layout
+
+\begin_layout Standard
+正确:假如尚未安装此软件.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+不使用非正式的语言风格
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：Lady Gaga 的演唱会真是酷毙了，从没看过这么给力的表演！！！
+\end_layout
+
+\begin_layout Standard
+正确：无法参加本次活动，我深感遗憾。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+用对"的","地","得"(注意词义)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+她露出了开心的笑容。
+\end_layout
+
+\begin_layout Standard
+（形容词＋的＋名词）
+\end_layout
+
+\begin_layout Standard
+她开心地笑了。
+\end_layout
+
+\begin_layout Standard
+（副词＋地＋动词）
+\end_layout
+
+\begin_layout Standard
+她笑得很开心。
+\end_layout
+
+\begin_layout Standard
+（动词＋得＋副词）
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+使用代词时(比如"其","该","此","这"等词),必须明确指代的内容,保证只有一个含义.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：从管理系统可以监视中继系统和受其直接控制的分配系统。
+\end_layout
+
+\begin_layout Standard
+正确：从管理系统可以监视两个系统：中继系统和受中继系统直接控制的分配系统。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+名词前面不要有过多的形容词
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：此设备的使用必须在接受过本公司举办的正式的设备培训的技师的指导下进行。
+\end_layout
+
+\begin_layout Standard
+正确：此设备必须在技师的指导下使用，且指导技师必须接受过由本公司举办的正式设备培训。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+同样一个意思,尽量使用肯定句表达,不要使用否定句表达
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：请确认没有接通装置的电源。
+\end_layout
+
+\begin_layout Standard
+正确：请确认装置的电源已关闭。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+句子的长度尽量保持在20个字以内；20～29个字的句子，可以接受；39～39个字的句子，语义必须明确，才能接受；多于40个字的句子，在任何情况下都不能接受。
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：本产品适用于从由一台服务器进行动作控制的单一节点结构到由多台服务器进行动作控制的并行处理程序结构等多种体系结构。
+\end_layout
+
+\begin_layout Standard
+正确：本产品适用于多种体系结构。无论是由一台服务器（单一节点结构），还是由多台服务器（并行处理结构）进行动作控制，均可以使用本产品。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+尽量避免使用双重否定.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+错误：没有删除权限的用户，不能删除此文件。
+\end_layout
+
+\begin_layout Standard
+正确：用户必须拥有删除权限，才能删除此文件。
+\end_layout
+
+\end_deeper
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+必要的除技术额外的只是还是要学的,语言的天赋也不太可能是生来就具备的,需要一个长期的过程来坚持.
+\end_layout
+
+\begin_layout Standard
+原文地址:
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.ruanyifeng.com/blog/2016/10/document_style_guide.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
