@@ -1,0 +1,434 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Druid在Spring中的整合
+\end_layout
+
+\begin_layout Section
+druid说明
+\end_layout
+
+\begin_layout Standard
+在之前说过,driud是阿里开源的一个数据连接池,号称是最好的,其实在性能和扩展方面来说确实做得不错,超越了其他的几个(具体比较详情链接
+\begin_inset CommandInset href
+LatexCommand href
+name "druid与其他数据连接池对比"
+target "https://github.com/alibaba/druid/wiki/%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0%E5%AF%B9%E6%AF%94"
+
+\end_inset
+
+).所以说想在以后的项目中尝试使用它,体验一下快感.
+\end_layout
+
+\begin_layout Section
+具体配置
+\end_layout
+
+\begin_layout Subsection
+maven配置
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<groupId>com.alibaba</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<artifactId>druid</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<version>${druid-version}</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对应的版本根据你自己来选择.
+\end_layout
+
+\begin_layout Standard
+也可选择Maven仓库查找公共的仓库地址
+\end_layout
+
+\begin_layout Standard
+http://www.mvnrepository.com/artifact/com.alibaba/druid
+\end_layout
+
+\begin_layout Subsection
+参数配置
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="
+init" destroy-method="close"> 
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 基本属性 url、user、password -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="url" value="${jdbc_url}" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="username" value="${jdbc_user}" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="password" value="${jdbc_password}" />
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 配置初始化大小、最小、最大 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="initialSize" value="1" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="minIdle" value="1" /> 
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="maxActive" value="20" />
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 配置获取连接等待超时的时间 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="maxWait" value="60000" />
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="timeBetweenEvictionRunsMillis" value="60000" />
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="minEvictableIdleTimeMillis" value="300000" />
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="validationQuery" value="SELECT 'x'" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="testWhileIdle" value="true" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="testOnBorrow" value="false" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="testOnReturn" value="false" />
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="poolPreparedStatements" value="true" />
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="maxPoolPreparedStatementPerConnectionSize" value="20"
+ />
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 配置监控统计拦截的filters -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="filters" value="stat" /> 
+\end_layout
+
+\begin_layout Plain Layout
+
+  </bean>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常来说，只需要修改initialSize、minIdle、maxActive。
+\end_layout
+
+\begin_layout Standard
+如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false。
+\end_layout
+
+\begin_layout Standard
+PS:1.如果是使用properties文件来实现配置,如果没用自定义参数,对应的参数名称要完全遵照Druid.
+\end_layout
+
+\begin_layout Standard
+2.如果要配置多数据源,根据自定义名称区分开来.
+\end_layout
+
+\begin_layout Subsection
+使用DruidDataSourceBuilder创建数据源
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ 	@Primary
+\end_layout
+
+\begin_layout Plain Layout
+
+    @ConfigurationProperties("spring.datasource.druid.one")
+\end_layout
+
+\begin_layout Plain Layout
+
+    @Bean
+\end_layout
+
+\begin_layout Plain Layout
+
+    public DataSource dataSourceOne(){
+\end_layout
+
+\begin_layout Plain Layout
+
+        return DruidDataSourceBuilder.create().build();
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    @ConfigurationProperties("spring.datasource.druid.two")
+\end_layout
+
+\begin_layout Plain Layout
+
+    @Bean
+\end_layout
+
+\begin_layout Plain Layout
+
+    public DataSource dataSourceTwo(){
+\end_layout
+
+\begin_layout Plain Layout
+
+        return DruidDataSourceBuilder.create().build();
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+以上算是对druid的简单入门总结吧,之后会继续进行深入探究.
+\end_layout
+
+\begin_layout Standard
+参考:
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/alibaba/druid
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
