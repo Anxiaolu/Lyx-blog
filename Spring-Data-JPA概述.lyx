@@ -1,0 +1,488 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Spring-Data-JPA概述
+\end_layout
+
+\begin_layout Section*
+它是什么
+\end_layout
+
+\begin_layout Standard
+它是Spring基于ORM框架,JPA规范封装的一套JPA应用框架.,可以使开发者使用极简的代码即可实现对数据的访问和操作.它提供了包括增删改查等在内的常用功能,易
+于扩展.
+\end_layout
+
+\begin_layout Section*
+Spring-Data-JPA有什么
+\end_layout
+
+\begin_layout Subsection*
+提供的编成接口及其对应的用途
+\end_layout
+
+\begin_layout Standard
+\begin_inset External
+	template PDFPages
+	filename doc/Spring-Data-JPA概述.pdf
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+继承关系图
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Spring/Spring-Data-Jpa/Spring-Data-Jpa_Repository.png
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+如何使用
+\end_layout
+
+\begin_layout Standard
+首先,先创建好jpa的配置文件(以最初始的用persistence.xml文件的配置方式),如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\footnotesize},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<?xml version="1.0" encoding="UTF-8"?>
+\end_layout
+
+\begin_layout Plain Layout
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+\end_layout
+
+\begin_layout Plain Layout
+
+  <persistence-unit name="defaultPersistenceUnit"   ="RESOURCE_LOCAL">
+\end_layout
+
+\begin_layout Plain Layout
+
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <properties>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 使用MySQL方言 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"
+/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的URL地址 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.url"
+\end_layout
+
+\begin_layout Plain Layout
+
+        value="jdbc:mysql://localhost:3306/spring"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的驱动 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver
+"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的用户名 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.username" value="root"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的密码 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.password" value="314"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 显示SQL语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.show_sql" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.useUnicode" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 在显示SQL语句时格式化语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.format_sql" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.use_sql_comments" value="false"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 自动输出schema创建DDL语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.hbm2ddl.auto" value="create"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接超时后自动重连 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.autoReconnect" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="connection.autoReconnectForPools" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="connection.is-connection-validation-required" value="true"/
+>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </properties>
+\end_layout
+
+\begin_layout Plain Layout
+
+  </persistence-unit>
+\end_layout
+
+\begin_layout Plain Layout
+
+</persistence>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+配置完如上文件,剩下的,需要在Spring的配置文档ApplicationContext.xml中加入如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\footnotesize},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<!--第一步-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义要用到的包扫描路径-->
+\end_layout
+
+\begin_layout Plain Layout
+
+	//这里根据自己的实际情况来写.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--第二步-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义实体的工厂Bean,注意下方的UnitName不要写错,跟persistence.xml文档里定义要一样.-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManage
+rFactoryBean">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<property name="persistenceUnitName" value="defaultPersistenceUnit"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<property name="persistenceXmlLocation" value="classpath:persistence.xml">
+\end_layout
+
+\begin_layout Plain Layout
+
+</bean>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--第三步-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义事务管理器-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManag
+er">
+\end_layout
+
+\begin_layout Plain Layout
+
+    <property name="entityManagerFactory" ref="entityManagerFactory"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+</bean>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--第四步-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义Repository接口的存放目录-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义接口实现的后缀名,一般为Impl-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义实体工厂的引用-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--定义实体管理器的引用-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<jpa:repositories base-package="cn.edu.sdut.softlab.repository"
+\end_layout
+
+\begin_layout Plain Layout
+
+		repository-impl-postfix="Impl" 
+\end_layout
+
+\begin_layout Plain Layout
+
+        transaction-manager-ref="entityManagerFactory"  
+\end_layout
+
+\begin_layout Plain Layout
+
+        entity-manager-factory-ref="transactionManagerFactory"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--第五步-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<!--声明采用注解的方式申明事务-->
+\end_layout
+
+\begin_layout Plain Layout
+
+<tx:annotation-driven transaction-manager="transactionManager"/>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+总结
+\end_layout
+
+\begin_layout Standard
+如果在学Spring-Data-Jpa之前就学过jpa和Spring的人来说,理解起来挺容易的.暂时不懂也不要紧,多琢磨,凡事要循序渐进,希望以上的能对你有所帮助.
+\end_layout
+
+\end_body
+\end_document
