@@ -93,10 +93,10 @@ Spring-Data-JPA有什么
 \end_layout
 
 \begin_layout Standard
-\begin_inset External
-	template PDFPages
-	filename doc/Spring-Data-JPA概述.pdf
-	lyxscale 80
+\begin_inset Graphics
+	filename imgs/Spring/Spring-Data-Jpa/Spring-Data-Jpa_Repositories.png
+	lyxscale 35
+	scale 35
 
 \end_inset
 
