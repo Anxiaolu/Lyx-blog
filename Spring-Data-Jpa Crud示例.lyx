@@ -81,7 +81,7 @@ Spring-Data-Jpa Crud示例
 
 \begin_layout Standard
 之前在上一次只是简单讲了一下Spring中如何使用Spring-Data-Jpa来将Spring与Jpa融合,配置文件的设置和参数说明.这次根据一个具体的增删改查
-的例子来演示一下.话不多说,上代码.
+的例子来演示一下.话不多说,上代码(配置文档按照之前的Spring-Data-Jpa的概述中的方式配置即可).
 \end_layout
 
 \begin_layout Section*
@@ -108,13 +108,17 @@ Spring-Data-Jpa Crud示例
 \end_layout
 
 \begin_layout Standard
+User实体类
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Plain Layout
 
-package cn.sdut.edu.softlab.entity
+package cn.edu.sdut.softlab.entity;
 \end_layout
 
 \begin_layout Plain Layout
@@ -188,6 +192,428 @@ public class User{
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+UserRepository接口
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package cn.edu.sdut.softlab.repository;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+import org.springframework.data.jpa.repository.JpaRepository;
+\end_layout
+
+\begin_layout Plain Layout
+
+import cn.edu.sdut.softlab.entity.User;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface UserRepository extends JpaRepository<User,Integer>{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Modifying // 说明该方法是修改操作
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Transactional // 说明该方法是事务性操作
+\end_layout
+
+\begin_layout Plain Layout
+
+    @Query("update UserEntity us set us.firstName=:qFirstName, "
+\end_layout
+
+\begin_layout Plain Layout
+
+          + "us.lastName=:qLastName, us.password=:qPassword where us.id=:qId")
+\end_layout
+
+\begin_layout Plain Layout
+
+    void updateUser(
+\end_layout
+
+\begin_layout Plain Layout
+
+          @Param("qFirstName") String firstName,
+\end_layout
+
+\begin_layout Plain Layout
+
+          @Param("qLastName") String lastName,
+\end_layout
+
+\begin_layout Plain Layout
+
+          @Param("qPassword") String password,
+\end_layout
+
+\begin_layout Plain Layout
+
+          @Param("qId") Integer id);
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+UserService接口
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package cn.edu.sdut.softlab.repository;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+import cn.edu.sdut.softlab.entity.User;
+\end_layout
+
+\begin_layout Plain Layout
+
+import java.util.List;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface UserService {
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void addUser(User user);
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void UpdateUser(User user);
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void delectUser(User user);
+\end_layout
+
+\begin_layout Plain Layout
+
+	public User getUser(Integer id);
+\end_layout
+
+\begin_layout Plain Layout
+
+	public List<User> getUsers();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+UserServiceImpl
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package cn.edu.sdut.softlab.service;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+import org.springframework.beans.factory.annotation.Autowired;
+\end_layout
+
+\begin_layout Plain Layout
+
+import cn.edu.sdut.softlab.repository.UserRepository;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class UserSerivceImpl implements UserService {
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Autowired
+\end_layout
+
+\begin_layout Plain Layout
+
+	private UserRepository userrepository;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void addUser(User user){
+\end_layout
+
+\begin_layout Plain Layout
+
+		userrepository.save(user);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void updateUser(User user){
+\end_layout
+
+\begin_layout Plain Layout
+
+		User userEntity = userrepository.findOne(user.getId());
+\end_layout
+
+\begin_layout Plain Layout
+
+		userrepository.updateUser(
+\end_layout
+
+\begin_layout Plain Layout
+
+            userEntity.getFirstName(),
+\end_layout
+
+\begin_layout Plain Layout
+
+            userEntity.getLastName(),
+\end_layout
+
+\begin_layout Plain Layout
+
+            userEntity.getPassword(),
+\end_layout
+
+\begin_layout Plain Layout
+
+            userEntity.getId()
+\end_layout
+
+\begin_layout Plain Layout
+
+    	);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void delectUser(User user){
+\end_layout
+
+\begin_layout Plain Layout
+
+		User user = userrepository.findOne(user.getId());
+\end_layout
+
+\begin_layout Plain Layout
+
+		userrepository.delect(user);
+\end_layout
+
+\begin_layout Plain Layout
+
+		userrepository.flush();
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+	public User getUser(Integer id){
+\end_layout
+
+\begin_layout Plain Layout
+
+		User user = userrepository.findOne(id);
+\end_layout
+
+\begin_layout Plain Layout
+
+		return user;	
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+	public List<User> getUsers(){
+\end_layout
+
+\begin_layout Plain Layout
+
+		List<User> users = userrepository.findAll();
+\end_layout
+
+\begin_layout Plain Layout
+
+		return users;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以上是对示例的大致性的演示,异常类和测试类暂时不写了,不太完善,但是主要部分基本展示完了.这里有一个具体的示例(能正常运行)–
+\begin_inset CommandInset href
+LatexCommand href
+name "Spring-Data-Jpa Demo"
+target "https://github.com/Anxiaolu/SpringLearning/tree/master/training"
+
+\end_inset
+
+.希望对你们有用!
+\end_layout
+
+\begin_layout Section*
+总结
+\end_layout
+
+\begin_layout Standard
+其实仔细观察一下JpaRepository接口里面的方法,对照一下Jpa原始的EntityManager接口的方法.两者都是一些增删改查的方法,本质是一样的,只不
+过Spring-Data-Jpa对它进行了分层化的处理,其实从功能上来看没什么区别.所以说,你会用Jpa,就离掌握Spring-Data-Jpa很近了,需要注意的
+就是Spring的一些规范和方式特性的问题了.至此,望读者在Spring的道路上继续奋进.
 \end_layout
 
 \end_body
