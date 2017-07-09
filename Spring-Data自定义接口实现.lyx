@@ -1,0 +1,279 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Spring Data自定义接口实现
+\end_layout
+
+\begin_layout Section*
+引言
+\end_layout
+
+\begin_layout Standard
+使用Spring Data自定义的Repository的实现方式最普遍的就是继承Spring的Repository<T,ID>接口.在这里说一下自定义接口的使用方
+式.
+\end_layout
+
+\begin_layout Section*
+定义及使用方式一:
+\end_layout
+
+\begin_layout Standard
+首先,因为Spring Data JPA的JpaRepository接口封装了一系列的增删改查,所以方便一般方式如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public interface UserDao extends JpaRepository<User,Integer>{
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后,对于想使用自己定义的一些接口,那就再自行定义一些接口方法,如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public interface UserDaoTask<T,ID>{
+\end_layout
+
+\begin_layout Plain Layout
+
+	void method();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当然,这里既要实现JpaRepository又要实现自定义的接口,采用多继承的方式
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public interface UserDao extends JpaRepository<User,Integer>,UserDaoTask<User,In
+teger>{
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个时候,在自己的Service层中就可以使用了,但这时候是空方法,必须自行实现.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public class UserDaoImpl implements UserDaoTask{
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void method(){
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println("Hello!");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+PS:需要注意的是,因为要实现的是UserDaoTask接口里面的方法,但是命名却不能按照对应的写成UserDaoTaskImpl,如果要写成这个,回报以下错误
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+No property method found for type Task!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+那为什么呢，因为任何继承了Repository（JpaRepository最终也是继承于Repository）spring都会为他生成一个实现类，因为UserD
+ao 继承于UserDaoTask，而UserDaoTask中的method不是spring data jpa规范查询方法的规则(具体规则下次再讲)，如果就报找
+不到找不到属性了。
+\end_layout
+
+\begin_layout Standard
+当然,你会问UserDaoTask不会有UserDaoTaskImpl实现类吗,按照spring的文档说的,只要配置好实现类的后缀名称就可以,也确实是这样.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    <jpa:repositories 
+\end_layout
+
+\begin_layout Plain Layout
+
+        base-package="cn.edu.sdut.softlab.Repository" 
+\end_layout
+
+\begin_layout Plain Layout
+
+        query-lookup-strategy="create-if-not-found" 
+\end_layout
+
+\begin_layout Plain Layout
+
+        transaction-manager-ref="transactionManager"  
+\end_layout
+
+\begin_layout Plain Layout
+
+        entity-manager-factory-ref="entityManagerFactory"/>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Spring的实现规范的命名方式应该是继承于Repository接口的哪个命名+Impl.正如上所说,真正应该写的是UserDaoImpl而不是UserDaoTa
+skImpl.
+\end_layout
+
+\end_body
+\end_document
