@@ -1,0 +1,448 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+关于MySql的SSL-Connection
+\end_layout
+
+\begin_layout Section*
+原因
+\end_layout
+
+\begin_layout Standard
+之前在写一些有关增删改查的项目中,都是用的postgresql数据库,用到的服务器是wildfly,用的直接是用bin/jboss-cli.sh这个来配置的数据源
+,没有仔细研究一下究竟用jboss-cli.sh配置的数据源到底进行了那些修改.在最近换成用MySQL之后,出现了这么一个问题:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Establishing SSL connection without server's identity verification is not
+ recommended.
+ According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must
+ be established by default if explicit option isn't set.
+ For compliance with existing applications not using SSL the verifyServerCertifi
+cate property is set to 'false'.
+ You need either to explicitly disable SSL by setting useSSL=false, or set
+ useSSL=true and provide truststore for server certificate verification.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是我从Wildlfy终端日志中粘出来的,其实这个只是一个警告,不是错误.具体的意思是,说要你建立ssl链接,但是服务器本身没有身份认证,这种方式不推荐使用.但是你
+在链接的时候是要说明的,如果没有显示声明不适用ssl链接,它默认是使用的,就会导致如上警告.
+\end_layout
+
+\begin_layout Section*
+具体操作
+\end_layout
+
+\begin_layout Standard
+其实之前在用hibernate/jpa,甚至说是用jdbc的时候,仔细看一下你jdbc的connection url里面,其实是有这么一段的:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\normalsize},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/tes
+t?useUnicode=true&characterEncoding=utf-8&useSSL=false","root", "letmein");
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在jpa的persistence.xml文件中也有:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<?xml version="1.0" encoding="UTF-8"?>
+\end_layout
+
+\begin_layout Plain Layout
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+\end_layout
+
+\begin_layout Plain Layout
+
+  <persistence-unit name="defaultPersistenceUnit"  transaction-type="RESOURCE_LO
+CAL">
+\end_layout
+
+\begin_layout Plain Layout
+
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <properties>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 使用MySQL方言 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"
+/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的URL地址 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.url"
+\end_layout
+
+\begin_layout Plain Layout
+
+        value="jdbc:mysql://localhost:3306/spring"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的驱动 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver
+"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的用户名 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.username" value="root"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接的密码 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.password" value="314"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 显示SQL语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.show_sql" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.useUnicode" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 在显示SQL语句时格式化语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.format_sql" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.use_sql_comments" value="false"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 自动输出schema创建DDL语句 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.hbm2ddl.auto" value="create"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      <!-- 数据库连接超时后自动重连 -->
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="hibernate.connection.autoReconnect" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="connection.autoReconnectForPools" value="true"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <property name="connection.is-connection-validation-required" value="true"/
+>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </properties>
+\end_layout
+
+\begin_layout Plain Layout
+
+  </persistence-unit>
+\end_layout
+
+\begin_layout Plain Layout
+
+</persistence>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+例如,当使用到wildlfy数据源的时候,需要配置的就不是这里了,而是在standalone.xml中:
+\end_layout
+
+\begin_layout Standard
+ps:在wildlfy中配置数据源的方式:
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://softlab.sdut.edu.cn/blog/subaochen/2016/11/wildfly%E9%85%8D%E7%BD%AEpostgres
+ql%E6%95%B0%E6%8D%AE%E6%BA%90/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以下是使用mysql数据源时需要的配置:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<datasource jndi-name="java:jboss/datasources/mysqlDS" pool-name="mysqlDSPool">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<connection-url>jdbc:mysql://localhost:3306/ejos?useSSL=false</connection-url>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<driver>mysql</driver>
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<security>
+\end_layout
+
+\begin_layout Plain Layout
+
+        	<user-name>root</user-name>
+\end_layout
+
+\begin_layout Plain Layout
+
+            <password>314</password>
+\end_layout
+
+\begin_layout Plain Layout
+
+    	</security>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<validation>  
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<valid-connection-checker class-name="org.jboss.resource.adapter.jdbc.vendor.MySQ
+LValidConnectionChecker"/>  
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<validate-on-match>true</validate-on-match>  
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<background-validation>false</background-validation>  
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<background-validation-millis>60000</background-validation-millis>
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+   	<exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExc
+eptionSorter"/>  
+\end_layout
+
+\begin_layout Plain Layout
+
+	</validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+</datasource>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上面的connection-url需要加上对ssl的限定,不使用,下面是对链接的验证.
+\end_layout
+
+\end_body
+\end_document
