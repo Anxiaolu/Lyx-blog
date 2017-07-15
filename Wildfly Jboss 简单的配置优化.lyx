@@ -1,0 +1,965 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Wildfly Jboss 简单的配置优化
+\end_layout
+
+\begin_layout Section*
+引言
+\end_layout
+
+\begin_layout Standard
+在学会使用wildlfy之后,只是简单地把它当做一种工具,没有仔细类似于tomcat那样研究过它的优化配置,近期正好找到了这么一份关于它的配置优化,拿来跟大家分
+享一下.
+\end_layout
+
+\begin_layout Section*
+log 日志
+\end_layout
+
+\begin_layout Standard
+日志输出定义在root-logger里面：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<root-logger>
+\end_layout
+
+\begin_layout Plain Layout
+
+	<level name="INFO"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <handlers>
+\end_layout
+
+\begin_layout Plain Layout
+
+        <handler name="CONSOLE"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        <handler name="FILE"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </handlers>
+\end_layout
+
+\begin_layout Plain Layout
+
+</root-logger>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+级别是INFO;可以改为warn，error等减少日志输出。将<handler name="CONSOLE"/>删除掉，就不会往控制台输出日志。增快速度。
+\end_layout
+
+\begin_layout Standard
+log将输出到两个handler里面：console和file。这两个定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<console-handler name="CONSOLE"> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<level name="INFO"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+		<formatter> 
+\end_layout
+
+\begin_layout Plain Layout
+
+			<named-formatter name="COLOR-PATTERN"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+		</formatter>
+\end_layout
+
+\begin_layout Plain Layout
+
+</console-handler>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<size-rotating-file-handler name="FILE" autoflush="true">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<formatter> 
+\end_layout
+
+\begin_layout Plain Layout
+
+		<named-formatter name="PATTERN"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	</formatter> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<file relative-to="jboss.server.log.dir" path="server.log"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<rotate-size value="1000k"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<max-backup-index value="5"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<append value="true"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+	<suffix value=".yyyy-MM-dd"/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+</size-rotating-file-handler>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+文件用了size-rotating-file-handler。rotate-size规定了日志每达到1m，就生成新的日志。一天共会生成5个分割文件。当日志达到4
+个以后，剩下日志会全填充到server.log。导致这个转为.5文件后特别大。
+\end_layout
+
+\begin_layout Section*
+数据连接池部分
+\end_layout
+
+\begin_layout Standard
+数据库连接池失败后，自动重新连接
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<datasource jndi-name="java:jboss/datasources/MySqlDS" pool-name="MySqlDS"
+ enabled="true" use-java-context="true">
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <connection-url>jdbc:mysql://localhost:3306/statisticsystem?
+characterEncoding=utf-8&amp;autoReconnect=true&amp;failOverReadOnly=false</conne
+ction-url>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <driver>mysql</driver>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <user-name>jboss</user-name>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <password>jboss</password>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <valid-connection-checker class-name="org.jboss.jca.adapter
+s.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <validate-on-match>true</validate-on-match>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <background-validation>false</background-validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <timeout>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <set-tx-query-timeout>false</set-tx-query-timeout>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <blocking-timeout-millis>0</blocking-timeout-millis>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <idle-timeout-minutes>0</idle-timeout-minutes>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <query-timeout>0</query-timeout>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <use-try-lock>0</use-try-lock>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <allocation-retry>0</allocation-retry>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <allocation-retry-wait-millis>0</allocation-retry-wait-m
+illis>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </timeout>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <statement>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <share-prepared-statements>false</share-prepared-stateme
+nts>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </statement>
+\end_layout
+
+\begin_layout Plain Layout
+
+                </datasource>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+                <xa-datasource jndi-name="java:jboss/datasources/MySqlStatDW"
+ pool-name="MySqlStatDW" enabled="true" use-java-context="true">
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-datasource-property name="ServerName">
+\end_layout
+
+\begin_layout Plain Layout
+
+                        192.168.8.238
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-datasource-property>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-datasource-property name="PortNumber">
+\end_layout
+
+\begin_layout Plain Layout
+
+                        5029
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-datasource-property>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-datasource-property name="DatabaseName">
+\end_layout
+
+\begin_layout Plain Layout
+
+                        statistics
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-datasource-property>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <driver>mysql</driver>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-pool>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <min-pool-size>5</min-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <initial-pool-size>5</initial-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <max-pool-size>100</max-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <prefill>true</prefill>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-pool>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <user-name>zhibin</user-name>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <password>zhibin123</password>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <valid-connection-checker class-name="org.jboss.jca.adapter
+s.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <check-valid-connection-sql>SELECT 1</check-valid-connec
+tion-sql>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <validate-on-match>true</validate-on-match>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <background-validation>false</background-validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.ext
+ensions.mysql.MySQLExceptionSorter"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </validation>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <statement>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <share-prepared-statements>false</share-prepared-stateme
+nts>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </statement>
+\end_layout
+
+\begin_layout Plain Layout
+
+                </xa-datasource>
+\end_layout
+
+\begin_layout Plain Layout
+
+                <xa-datasource jndi-name="java:jboss/datasources/MySqlDataCenter
+" pool-name="MySqlDataCenter" enabled="true" use-java-context="true">
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-datasource-property name="ServerName">
+\end_layout
+
+\begin_layout Plain Layout
+
+                        211.100.75.213
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-datasource-property>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-datasource-property name="DatabaseName">
+\end_layout
+
+\begin_layout Plain Layout
+
+                        cms
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-datasource-property>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <driver>mysql</driver>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <xa-pool>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <min-pool-size>5</min-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <initial-pool-size>5</initial-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <max-pool-size>100</max-pool-size>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <prefill>true</prefill>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </xa-pool>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    <security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <user-name>CPdeveloper206</user-name>
+\end_layout
+
+\begin_layout Plain Layout
+
+                        <password>206@)^developer</password>
+\end_layout
+
+\begin_layout Plain Layout
+
+                    </security>
+\end_layout
+
+\begin_layout Plain Layout
+
+                </xa-datasource>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+?characterEncoding=utf-8 是数据库防止存中文乱码，加上后改好,其他参数自行设置。
+\end_layout
+
+\begin_layout Section*
+事务的超时
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<subsystem xmlns="urn:jboss:domain:transactions:3.0">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<core-environment>
+\end_layout
+
+\begin_layout Plain Layout
+
+		<process-id>
+\end_layout
+
+\begin_layout Plain Layout
+
+        	<uuid/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        </process-id>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </core-environment>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <recovery-environment socket-binding="txn-recovery-environment" status-socke
+t-binding="txn-status-manager"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <coordinator-environment default-timeout="60"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+</subsystem>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+任务job，分区任务最大的线程数
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<subsystem xmlns="urn:jboss:domain:batch-jberet:1.0">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<default-job-repository name="in-memory"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <default-thread-pool name="batch"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <job-repository name="in-memory">
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<in-memory/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </job-repository>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <thread-pool name="batch">
+\end_layout
+
+\begin_layout Plain Layout
+
+    	<max-threads count="200"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        <keepalive-time time="30" unit="seconds"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    </thread-pool>
+\end_layout
+
+\begin_layout Plain Layout
+
+</subsystem>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+数据库做http auth
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<security-domain name="dbdomain" cache-type="default">
+\end_layout
+
+\begin_layout Plain Layout
+
+	<authentication>
+\end_layout
+
+\begin_layout Plain Layout
+
+		<login-module code="Database" flag="required">
+\end_layout
+
+\begin_layout Plain Layout
+
+			<module-option name="dsJndiName" value="java:jboss/datasources/MySqlDS"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        	<module-option name="principalsQuery" value="select passwd from
+ USERS where login=?"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+        	<module-option name="rolesQuery" value="select Role , 'Roles' from
+ USER_ROLES where login=?"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    	</login-module>
+\end_layout
+
+\begin_layout Plain Layout
+
+	</authentication>
+\end_layout
+
+\begin_layout Plain Layout
+
+</security-domain>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+上传文件最大尺寸限制
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<server name="default-server">
+\end_layout
+
+\begin_layout Plain Layout
+
+<http-listener name="default" max-post-size="204857600" socket-binding="http"
+ redirect-socket="https"/>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+改成外网地址可以访问
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<interfaces>
+\end_layout
+
+\begin_layout Plain Layout
+
+<interface name="management">
+\end_layout
+
+\begin_layout Plain Layout
+
+<inet-address value="${jboss.bind.address.management:0.0.0.0}"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+</interface>
+\end_layout
+
+\begin_layout Plain Layout
+
+<interface name="public">
+\end_layout
+
+\begin_layout Plain Layout
+
+<inet-address value="${jboss.bind.address:0.0.0.0}"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+</interface>
+\end_layout
+
+\begin_layout Plain Layout
+
+<interface name="unsecure">
+\end_layout
+
+\begin_layout Plain Layout
+
+<inet-address value="${jboss.bind.address.unsecure:127.0.0.1}"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+</interface>
+\end_layout
+
+\begin_layout Plain Layout
+
+</interfaces>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+转自:
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.cnblogs.com/bigben0123/p/5828896.html"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
