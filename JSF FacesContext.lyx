@@ -1,0 +1,1657 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+JSF FacesCotext详解
+\end_layout
+
+\begin_layout Standard
+之前看过的,最近又要用到,复习一下.
+\end_layout
+
+\begin_layout Section*
+JSF FacesContext
+\end_layout
+
+\begin_layout Standard
+在Faces API中有两个类是要经常使用的.
+ 一个是FacesContext 一个是ExternalContext.首先讲解如何使用FacesContext .
+ 
+\end_layout
+
+\begin_layout Standard
+对每个JSF请求，FacesServlet对象都会为其获取一个javax.faces.
+ context.
+ 
+\end_layout
+
+\begin_layout Standard
+FacesContext类的实例。FacesServlet对象将下列3个取自Web容器的对象传给javax.faces.context.FacesContextFac
+tory对象的getFacesContext方法，以此来做到这一点： 
+\end_layout
+
+\begin_layout Itemize
+javax.servlet.ServletContext 
+\end_layout
+
+\begin_layout Itemize
+javax.servlet.ServletRequest 
+\end_layout
+
+\begin_layout Itemize
+javax.servlet.ServletResponse 
+\end_layout
+
+\begin_layout Standard
+这意味着FacesContext的实例里包含了所有处理JSF请求所需的每个请求的状态信息。图3-1展示了FacesContext实例里封装的其他一些对象。
+ 
+\end_layout
+
+\begin_layout Subsection*
+获取当前实例 
+\end_layout
+
+\begin_layout Standard
+一个经常用到的方法是静态的getCurrentInstance方法，它返回当前的FacesContext实例。此方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public static FacesContext getCurrentInstance() 
+\end_layout
+
+\begin_layout Standard
+下面的代码是一个用此方法获取FacesContext当前实例的例子： 
+\end_layout
+
+\begin_layout Standard
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Section*
+获取和修改组件树 
+\end_layout
+
+\begin_layout Standard
+FacesContext实例里最重要的内容是请求页面的组件树。组件树是由javax.faces.tree.Tree类来表示的(本章后面的“使用Tree类”一节会讨论)
+。FacesContext实例的tree属性就是Tree对象。 
+\end_layout
+
+\begin_layout Standard
+要获取或修改Tree对象，可使用tree属性的读取方法和赋值方法： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public abstract Tree getTree() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract void setTree(Tree tree) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+添加和获取消息 
+\end_layout
+
+\begin_layout Standard
+在 请求处理生命周期里，可能会遇到错误。比如，当验证器执行输入验证时，因为用户输入了不正确的值，验证可能失败；当组件试图把输入值转换为绑定到组件的模
+ 型对象所需的类型时，也可能会失败。所有消息都必须存放到FacesContext实例里以备后面进行处理。比如，您可能希望在页面里显示错误消息，从而
+ 为用户更正错误提供帮助。 
+\end_layout
+
+\begin_layout Standard
+错误消息是由javax.faces.application.Message接口(第11章再详细讨论)来表示的，您可以通过使用FacesContext类的addMess
+age方法向FacesContext实例里添加Message对象。这个方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract void addMessage(UIComponent component, Message message)
+ 
+\end_layout
+
+\begin_layout Standard
+如果component不为空，新加入的message就关联到component上。否则，它就不与任何特定组件的实例相关。 
+\end_layout
+
+\begin_layout Standard
+举例来说，验证器在验证组件值失败时可调用FacesContext的addMessage方法，传入值无效的组件及一个包含特定错误消息的Message对象。
+ 
+\end_layout
+
+\begin_layout Standard
+所有添加到FacesContext实例的Message对象都被加入到一个集合里。可通过调用getMessages方法的两个重载方法之一来获取加入的Message
+对象： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public abstract Iterator getMessages() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract Iterator getMessages(UIComponent component) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第一种形式的调用在一个Iterator里返回所有Message对象，而第二种形式的调用则仅返回与给定UIComponent相关联的Message对象。
+ 
+\end_layout
+
+\begin_layout Subsection*
+添加和获取请求处理事件 
+\end_layout
+
+\begin_layout Standard
+UIComponent 可以生成FacesEvent对象。比如，当单击一个UICommand组件时，它会生成一个ActionEvent对象(ActionEven
+t类是 FacesEvent类的子类)。这个FacesEvent对象需要在FacesContext实例里保存起来，以备请求处理生命周期里的下一步处理事件
+ 时所用。 
+\end_layout
+
+\begin_layout Standard
+可通过使用FacesContext类的addFacesEvent方法向FacesContext实例添加FacesEvent对象。此方法的签名如下：
+ 
+\end_layout
+
+\begin_layout Standard
+public abstract void addFacesEvent(FacesEvent event) 
+\end_layout
+
+\begin_layout Standard
+要提取先前添加的FacesEvent对象，可调用getFacesEvents方法，其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract Iterator getFacesEvents() 
+\end_layout
+
+\begin_layout Standard
+此方法返回FacesEvent时的顺序与其在队列中的顺序一致。 
+\end_layout
+
+\begin_layout Subsection*
+向Response对象里写入信息 
+\end_layout
+
+\begin_layout Standard
+为 了向Response对象里写入信息，FacesContext类提供了两个属性，一个是 javax.faces.Context.ResponseStream类型，另
+一个是 javax.faces.context.ResponseWriter类型。ResponseStream类型的对象用于输出二进制数据，而 ResponseWri
+ter类型的对象则用于输出字符。这些属性的读取方法和赋值方法如下： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public abstract ResponseStream getResponseStream() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract void setResponseStream(ResponseStream responseStream) 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract ResponseWriter getResponseWriter() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract void setResponseWriter(ResponseWriter responseWriter) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取和设置地区 
+\end_layout
+
+\begin_layout Standard
+初始状况下，locale属性的值和网络浏览器里指定的地区是一样的，但可以修改这个值，从而发送输出所使用的地区将独立于浏览器所使用的地区。此属性的读取方法和赋值方
+法如下： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public abstract Locale getLocale() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract void setLocale(Locale locale) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+操作请求处理生命周期 
+\end_layout
+
+\begin_layout Standard
+FacesContext类还提供了两个方法与请求处理生命周期进行交互： 
+\end_layout
+
+\begin_layout Standard
+● 在当前阶段的处理完成后，调用renderResponse方法通知JSF实现把控制权转到呈现响应阶段。也就是说，处于当前阶段和呈现响应阶段之间的所有其他阶段都
+不再执行。 
+\end_layout
+
+\begin_layout Standard
+● 调用responseComplete方法，告诉JSF实现此次请求的HTTP响应已经完成(比如在使用了HTTP重定向的情况下)。因此，当前阶段完成后，必须中止
+请求处理生命周期的处理。 
+\end_layout
+
+\begin_layout Standard
+这些方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public abstract void renderResponse() 
+\end_layout
+
+\begin_layout Plain Layout
+
+public abstract void responseComplete() 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取其他请求状态信息 
+\end_layout
+
+\begin_layout Standard
+其他每个请求的状态信息封装在ExternalContext对象里，可以使用getExternalContext方法获取该对象： 
+\end_layout
+
+\begin_layout Standard
+public abstract ExternalContext getExternalContext() 
+\end_layout
+
+\begin_layout Standard
+现在讲解ExternalContext。 
+\end_layout
+
+\begin_layout Standard
+使 用ExternalContext类提供的方法可以获取ServletContext、ServletRequest和ServletResponse对
+ 象，构造FacesContext实例时需要这些对象。除此之外，ExternalContext实例提供了包装器方法，可以使用这些方法获得原来需要从
+ ServletContext、ServletRequest及ServletResponse对象上调用一些方法获得的信息。
+\end_layout
+
+\begin_layout Subsection*
+获取ServletContext、ServletRequest和ServletResponse对象 
+\end_layout
+
+\begin_layout Standard
+可使用下列方法获取servlet信息： 
+\end_layout
+
+\begin_layout Standard
+● getContext 此方法可获取Web应用中与当前请求相关联的ServletContext对象。其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract Object getContext() 
+\end_layout
+
+\begin_layout Standard
+● getRequest 此方法可获取代表当前正在处理的请求的ServletRequest对象。其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract Object getRequest() 
+\end_layout
+
+\begin_layout Standard
+● getResponse 此方法可获取代表当前正在呈现的响应的ServletResponse对象。其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract Object getResponse() 
+\end_layout
+
+\begin_layout Standard
+这些方法都是返回一个Java.lang.Object对象，不是servlet特有的类型，这样就可以使JSF实现独立于其运行的环境。比如，JSF既可用于Web容器，也
+可以用于其他容器，如portlet等。 
+\end_layout
+
+\begin_layout Subsection*
+获取ServletContext特性 
+\end_layout
+
+\begin_layout Standard
+getApplicationMap方法返回一个包含ServletContext对象里全部特性名/值对的Map对象。下面是此方法的签名： 
+\end_layout
+
+\begin_layout Standard
+public abstract Java.util.Map getApplication() 
+\end_layout
+
+\begin_layout Standard
+作为一个例子，下面的代码可获取一个名叫databaseUtility的特性： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Object contextAttribute = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map contextMap = externalContext.getApplicationMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (contextMap!=null) 
+\end_layout
+
+\begin_layout Plain Layout
+
+contextAttribute = contextMap.get("databaseUtility"); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取Session对象及其特性 
+\end_layout
+
+\begin_layout Standard
+通 过ExternalContext对象可访问与当前请求相关联的Session对象。getSession方法可取回当前用户的 javax.servlet.http.H
+ttpSession对象，如果当前用户没有相应的Session对象，此方法的行为由传入的参数决定：如果为 该方法传入了一个true值，它会创建一个Session
+对象；否则，它会返回null。下面是getSession方法的签名： 
+\end_layout
+
+\begin_layout Standard
+此方法其实是javax.servlet.http.HttpServletRequest接口中getSession方法的包装器。 
+\end_layout
+
+\begin_layout Standard
+getSessionMap方法返回一个包含与当前请求相关联的Session对象里所有特性名/值对的Map对象。下面是它的方法签名： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.getSessionMap()
+\end_layout
+
+\begin_layout Standard
+要 获取Session对象里的特性，可调用Map类的get方法，传入要获取的特性名即可。文档中没有指明在当前请求没有相应Session对象的情况下，
+ 此方法是返回null还是一个空的Map对象。所以在调用Map的get方法之前，需要先检查Map是否为null。下面的代码是获取Session特性
+ 的例子： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Object sessionAttribute = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map sessionMap = externalContext.getSessionMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (sessionMap!=null) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sessionAttribute = sessionMap.get(key); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一行的key是一个包含特性名的字符串。 
+\end_layout
+
+\begin_layout Subsection*
+获取ServletContext对象的初始参数 
+\end_layout
+
+\begin_layout Standard
+getInitParameter方法是ServletContext对象的getInitParameter方法的包装器，用这个方法可以提取在部署描述符(web.xm
+l文件)里用context-init元素指定的初始参数值。此方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract String getInitParameter(String parameterName) 
+\end_layout
+
+\begin_layout Standard
+举例来说，如果在部署描述符声明了如下context-init元素： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<context-param> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<param-name>contactPerson</param-name> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<param-value>Scott Jobim</param-value> 
+\end_layout
+
+\begin_layout Plain Layout
+
+</context-param> 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下面代码中的字符串变量initParam的值会是Scott Jobim。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+String initParam = externalContext.getInitParameter("contactPerson"); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+getInitParameterMap方法返回一个包含ServletContext对象中全部初始参数的Map对象。其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getInitParameterMap() 
+\end_layout
+
+\begin_layout Standard
+为了获取一个初始参数的值，使用Map对象的get方法，同时传递初始参数的名称。比如，下面的代码把初始参数databaseName的值输出到控制台。
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map paramMap = externalContext.getInitParameterMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (paramMap!=null) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(paramMap.get("databaseName")); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取Request对象的特性 
+\end_layout
+
+\begin_layout Standard
+getRequestMap方法返回一个包含当前Request对象中全部特性名/值对的Map对象。其方法签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestMap()
+\end_layout
+
+\begin_layout Standard
+作为一个例子，下面的代码可用来提取Request对象里的特性： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Object requestAttribute = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map requestMap = externalContext.getRequestMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (requestMap!=null) 
+\end_layout
+
+\begin_layout Plain Layout
+
+requestAttribute = requestMap.get(key); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一行里的Key是一个包含要提取的属性名的字符串
+\end_layout
+
+\begin_layout Subsection*
+访问Request对象里的参数名和值 
+\end_layout
+
+\begin_layout Standard
+getRequestParameterMap、getRequestParameterNames和getRequestParameterValuesMap方法可用
+来访问Request对象里的参数名和值。 
+\end_layout
+
+\begin_layout Standard
+getRequestParameterMap返回一个包含Request对象里全部参数名/值对的Map对象。其签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestParameterMap()
+\end_layout
+
+\begin_layout Standard
+作为一个例子，下面的代码可用来提取名为id的请求参数的值： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+String id = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map requestParameterMap = externalContext.getRequestParameterMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (requestParameterMap!=null) 
+\end_layout
+
+\begin_layout Plain Layout
+
+id = (String) requestParameterMap.get("id"); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+getRequestParameterNames 方法返回一个包含全部请求参数名的Iterator。此方法其实是ServletRequest.getParamet
+erNames方法的包装器。不同 的是，ExternalContext类的getRequestParameterNames返回一个Iterator，而不是
+ java.util.Enumeration。此方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Iterator getRequestParameterNames() 
+\end_layout
+
+\begin_layout Standard
+作为一个例子，下面的代码把所有的请求参数名/值对输出到控制台。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map requestParameterMap = externalContext.getRequestParameterMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Iterator parameterNames = externalContext.getRequestParameterNames(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+while (parameterNames.hasNext()) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+String parameterName = (String) parameterNames.next(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+String parameterValue = 
+\end_layout
+
+\begin_layout Plain Layout
+
+(String) requestParameterMap.get(parameterName); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(parameterName + " : " + parameterValue); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+getRequestParameterValuesMap 方法返回一个包含Request对象里全部参数名/值对的Map对象。此方法与getRequestPara
+meterMap方法很相似，但 getRequestParameterValuesMap可返回全部相同参数名的值。在此方法返回的Map对象上调用get(key)
+方法，这一点等同 于获取当前请求的ServletRequest并在其上调用getParameterValues(key)。也就是说，Map对象返回的是一个字符串
+数 组。GetRequestParameterValuesMap方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestParameterValuesMap() 
+\end_layout
+
+\begin_layout Standard
+下面例子中的代码把请求参数id的全部值输出到控制台。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+String[] id = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map requestParameterValuesMap = externalContext.getRequestParameterValuesMap();
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (requestParameterValuesMap!=null) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+id = (String[]) requestParameterValuesMap.get("id"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+// print all values of id 
+\end_layout
+
+\begin_layout Plain Layout
+
+for (int i=0; i<id.length; i++) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(id[i]); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection*
+获取请求头的名和值 
+\end_layout
+
+\begin_layout Standard
+getRequestHeaderMap方法返回一个包含当前请求中全部头名/值对的Map对象。其方法签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestHeaderMap() 
+\end_layout
+
+\begin_layout Standard
+举个例子来说，下面的代码提取host头的值： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+String host = null; 
+\end_layout
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map headerMap = externalContext.getRequestHeaderMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (headerMap!=null) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+host = (String) headerMap.get("host"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(host); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意： 
+\end_layout
+
+\begin_layout Standard
+报头的名称是不区分大小写的。比如，对getRequestHeaderMap返回的Map对象分别用host、Host和Host作为参数来调用get方法，其结果是一
+样的。 
+\end_layout
+
+\begin_layout Standard
+getRequestHeaderValuesMap方法与getRequestHeaderMap方法相似。但在getRequestHeader 
+\end_layout
+
+\begin_layout Standard
+ValuesMap方法返回的Map对象上调用get方法会得到一个字符串的数组。getRequestHeaderValuesMap方法的签名如下：
+ 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestHeaderValuesMap() 
+\end_layout
+
+\begin_layout Standard
+在getRequestHeaderValuesMap方法返回的Map对象上调用get方法会返回一个java.util.Enumeration值。 
+\end_layout
+
+\begin_layout Standard
+下面的代码使用getRequestHeaderValuesMap方法来获取一个包含全部头名/值对的Map对象，然后在此Map对象上调用get方法以获取全部Acc
+ept-Encoding头的值，并将结果输出到控制台。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map headerValuesMap = externalContext.getRequestHeaderValuesMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (headerValuesMap!=null) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+Enumeration headers = 
+\end_layout
+
+\begin_layout Plain Layout
+
+(Enumeration) headerValuesMap.get("Accept-Encoding"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+while (headers.hasMoreElements()) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+String value = (String) headers.nextElement(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(value); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取Cookie 
+\end_layout
+
+\begin_layout Standard
+getRequestCookies方法是HttpServletRequest.getCookies方法的包装器，它返回一个javax.servlet.http.Cook
+ie对象的数组，数组中是当前Request对象里的全部Cookie。此方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract Cookie[] getRequestCookies() 
+\end_layout
+
+\begin_layout Standard
+例如，下面的代码取得当前请求中的全部Cookie对象，然后在结果数组上循环，输出全部Cookie的名和值。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Cookie[] cookies = externalContext.getRequestCookies(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+for (int i=0; i<cookies.length; i++) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+Cookie cookie = cookies[i]; 
+\end_layout
+
+\begin_layout Plain Layout
+
+String cookieName = cookie.getName(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+String cookieValue = cookie.getValue(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(cookieName + " : " + cookieValue); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+getRequestCookieMap 方法返回一个包含当前请求中全部Cookie的、以Cookie的名称作为键的Map对象。在此Map对象上调用get方法会返
+回一个 javax.servlet.http.Cookie对象。GetRequestCookieMap方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Map getRequestCookieMap() 
+\end_layout
+
+\begin_layout Standard
+例如，下面的代码取得名为password的Cookie对象并将其值输出到控制台。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Map cookieMap = externalContext.getRequestCookieMap(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (cookieMap!=null) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+Cookie cookie = (Cookie) cookieMap.get("password"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+if (cookie!=null) 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("Value:" + cookie.getValue()); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意： 
+\end_layout
+
+\begin_layout Standard
+Cookie名称区分大小写。 
+\end_layout
+
+\begin_layout Subsection*
+获取场所 
+\end_layout
+
+\begin_layout Standard
+getRequestLocale方法是ServletRequest.getLocale方法的包装器，它返回Request对象中的Locale对象。此方法的签名如下
+： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Locale getRequestLocale() 
+\end_layout
+
+\begin_layout Standard
+例如，下面的代码取回用户的场所并输出该场所的显示语言和显示国家。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Locale locale = externalContext.getRequestLocale(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("Language:" + locale.getDisplayLanguage()); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("Country:" + locale.getDisplayCountry()); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+获取上下文路径 
+\end_layout
+
+\begin_layout Standard
+getRequestContextPath是HttpServletRequest.getContextPath方法的包装器，它返回请求URI中指明请求上下文的上下
+文路径部分。其方法签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract String getRequestContextPath() 
+\end_layout
+
+\begin_layout Standard
+下面的代码段把请求URI的上下文路径输出到控制台： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("Context path:" + 
+\end_layout
+
+\begin_layout Plain Layout
+
+externalContext.getRequestContextPath()); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于URL http://localhost:8080/JSFCh03/faces/test.jsp来说，getRequestContextPath方法的返回值为
+/JSFCh03。 
+\end_layout
+
+\begin_layout Standard
+getRequestPathInfo 方法是HttpServletRequest.getPathInfo方法的包装器，它返回当客户端进行请求时与客户端发送的URL
+相关联的额外路径信 息。这部分信息跟在servlet路径信息的后面，但在查询字符串之前。getRequestPathInfo方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract String getRequestPathInfo() 
+\end_layout
+
+\begin_layout Standard
+例如，下面代码输出请求URL的路径信息。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("Path info:" + 
+\end_layout
+
+\begin_layout Plain Layout
+
+externalContext.getRequestPathInfo()); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于URL http://localhost:8080/JSFCh03/faces/test.jsp而言，getRequestPathInfo方法的返回值为tes
+t.jsp。 
+\end_layout
+
+\begin_layout Subsection*
+获取资源路径 
+\end_layout
+
+\begin_layout Standard
+getResourcePaths 方法是ServletContext类的getResourcePaths方法的包装器，它返回一个Set对象，其中包含Web应用中
+最长子路径与传入的 路径参数相匹配的资源路径。表示子目录的路径以“/”结束。返回的路径是相对于Web应用根路径的相对路径，并以“/”开始。此方法的签名如下：
+ 
+\end_layout
+
+\begin_layout Standard
+public abstract java.util.Set getResourcePaths(String path) 
+\end_layout
+
+\begin_layout Standard
+比如，考虑如下代码： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+FacesContext facesContext = FacesContext.getCurrentInstance(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+ExternalContext externalContext = facesContext.getExternalContext(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Set resourcePaths = externalContext.getResourcePaths("/"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Iterator iterator = resourcePaths.iterator(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+while (iterator.hasNext()) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+String path = (String) iterator.next(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(path); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("----------------------------"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+resourcePaths = externalContext.getResourcePaths("/WEB-INF"); 
+\end_layout
+
+\begin_layout Plain Layout
+
+iterator = resourcePaths.iterator(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+while (iterator.hasNext()) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+String path = (String) iterator.next(); 
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(path); 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这段代码两次调用了getResourcePaths方法，第一次传入“/”，第二次传入“/WEB-INF”。如果在一个目录结构如图3-2所示的Web应用里运行以上
+代码，则返回的第一个Set里包含如下路径： 
+\end_layout
+
+\begin_layout Standard
+/order.jsp 
+\end_layout
+
+\begin_layout Standard
+/index.jsp 
+\end_layout
+
+\begin_layout Standard
+/Styles.css 
+\end_layout
+
+\begin_layout Standard
+/images/ 
+\end_layout
+
+\begin_layout Standard
+/details.jsp 
+\end_layout
+
+\begin_layout Standard
+/WEB-INF/ 
+\end_layout
+
+\begin_layout Standard
+/checkOut.jsp 
+\end_layout
+
+\begin_layout Standard
+/browse.jsp 
+\end_layout
+
+\begin_layout Standard
+/shoppingCart.jsp 
+\end_layout
+
+\begin_layout Standard
+/search.jsp 
+\end_layout
+
+\begin_layout Standard
+/menu.jsp 
+\end_layout
+
+\begin_layout Standard
+第二个Set里包含如下路径： 
+\end_layout
+
+\begin_layout Standard
+/WEB-INF/faces-config.xml 
+\end_layout
+
+\begin_layout Standard
+/WEB-INF/web.xml 
+\end_layout
+
+\begin_layout Standard
+/WEB-INF/classes/ 
+\end_layout
+
+\begin_layout Standard
+/WEB-INF/lib/ 
+\end_layout
+
+\begin_layout Standard
+图3-2 测试getResourcesPath的目录结构 
+\end_layout
+
+\begin_layout Standard
+getResourceAsStream方法是ServletContext.getResourceAsStream的包装器，它返回指定路径中作为java.io.Inpu
+tStream对象的资源。其方法签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract java.io.InputStream getResourceAsStream(String path) 
+\end_layout
+
+\begin_layout Subsection*
+编码URL 
+\end_layout
+
+\begin_layout Standard
+encodeURL方法是HttpServletResponse.encodeURL方法的包装器，它编码给定的URL，其方法是加入会话的ID信息；或者，如果不需要这
+个步骤，则直接将给定的URL原封不动地返回。其方法签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract String encodeURL(String url) 
+\end_layout
+
+\begin_layout Standard
+在portlet中使用JSF时，encodeActionURL和encodeResourceURL方法很有用。encodeActionURL迫使URL作为参数传
+递，造成动作在入口/portlet中起作用。这个方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract String encodeResourceURL(String sb) 
+\end_layout
+
+\begin_layout Standard
+encodeResourceURL方法迫使URL作为参数传递，引用资源以在入口/portlet中起作用。该方法造成URL需要根据包括的特定入口进行重定向。实际上
+，它简单地返回一个绝对URL。下面是encodeResourceURL方法的签名： 
+\end_layout
+
+\begin_layout Standard
+public abstract String encodeResourceURL(String sb) 
+\end_layout
+
+\begin_layout Subsection*
+分派请求 
+\end_layout
+
+\begin_layout Standard
+dispatchMessage方法可根据当前上下文分派请求。对servlet而言，它通过调用forward实现这一点；而对portlet而言，则是通过调用inc
+lude方法实现这一点。此方法的签名如下： 
+\end_layout
+
+\begin_layout Standard
+public abstract void dispatchMessage(String requestURL) 
+\end_layout
+
+\begin_layout Standard
+throws java.io.IOException, FacesException
+\end_layout
+
+\end_body
+\end_document
