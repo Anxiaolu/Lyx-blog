@@ -1,0 +1,173 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+SpringMVC执行的具体流程
+\end_layout
+
+\begin_layout Standard
+都说在学一样东西的时候,要知道它的具体流程,学习它的思想.这里就讲解一下SpringMVC的具体流程,同时也是方便以后的继续深入.
+\end_layout
+
+\begin_layout Section*
+细节
+\end_layout
+
+\begin_layout Standard
+SpringMVC的开发流程实际上都是按照请求→响应的流程来开发的,下面就通过一个流程图来介绍请求→响应的完整流程.
+\end_layout
+
+\begin_layout Standard
+(图画的不是很好看,但是流程还是比较清晰的).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Spring/Spring/Spring_Executionprocess.png
+	lyxscale 50
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+按照图中所标识的序号,SpringMVC 请求→响应的完整工作流程如下:
+\end_layout
+
+\begin_layout Enumerate
+用户向服务器发送请求,请求被Spring的前段控制器DispatcherServlet拦截.
+\end_layout
+
+\begin_layout Enumerate
+DispatcherServlet对请求URL(统一资源定位符)进行解析,得到URI(请求资源表示服).然后根据URI,调用HandlerMapping获得Han
+dler获得该Handler配置的所有相关的对象,包括Handler对象及Handler对象对应的拦截器,这些对象会被封装到一个handlerExcutionC
+hain对象中返回.
+\end_layout
+
+\begin_layout Enumerate
+DispatcherServlet根据获得的Handler,选择一个合适的HandlerAdapter.HandlerAdapter的设计符合面向对象中的单一职责
+原则.代码架构清晰,便于维护,最重要的是,代码可复用性高.HandlerAdapter会被用于处理多Handler,调用Handler实际处理请求的方法,例如开始学
+习的hello方法.
+\end_layout
+
+\begin_layout Enumerate
+提取请求中的数据模型,开始执行Handler(Controller).在填充Handler的入参过程中,根据配置,Spring将帮助你做一些额外的工作.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+消息转换:将请求的消息(如Json,xml等数据),验证结果转换成一个对象,将对象转换为指定的响应消息.
+\end_layout
+
+\begin_layout Enumerate
+数据转换:对请求消息进行数据转换,如String转换成Integer,Double等.
+\end_layout
+
+\begin_layout Enumerate
+数据格式化:对请求消息进行数据格式换换,如将字符串格式转换成格式化数字或者格式化日期等.
+\end_layout
+
+\begin_layout Enumerate
+数据验证:验证数据的有效性(长度,格式等),验证结果存到BindingResult或者Error中.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Handler执行完成之后,向DispatcherServlet返回一个ModelAndView对象,ModelAndView对象中应该包含视图名或者视图名和模
+型.
+\end_layout
+
+\begin_layout Enumerate
+根据返回的ModelAndView对象,选择一个合适的ViewResolver(视图解析器).
+\end_layout
+
+\begin_layout Enumerate
+ViewResolver结合Model和View来渲染视图.
+\end_layout
+
+\begin_layout Enumerate
+将视图渲染结果返回给客户端.
+\end_layout
+
+\begin_layout Section*
+总结
+\end_layout
+
+\begin_layout Standard
+开发初学阶段,需要花一定时间理解框架整体方面流程性的东西,希望对你们有帮助.
+\end_layout
+
+\end_body
+\end_document
