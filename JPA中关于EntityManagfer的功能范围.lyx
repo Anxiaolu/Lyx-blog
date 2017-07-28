@@ -1,0 +1,663 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+JPA中关于EntityManagfer的功能范围
+\end_layout
+
+\begin_layout Section*
+问题描述
+\end_layout
+
+\begin_layout Subsection*
+框架及环境介绍:
+\end_layout
+
+\begin_layout Paragraph*
+JSF(2.2),CDI(1.2),JPA
+\end_layout
+
+\begin_layout Standard
+最近在写关于jpa的增删改查操作的时候,自己在写的时候没有注意,原本应该是用的Service层teacherService的删除方法,错写成了用entityma
+nager的删除操作.最初只是根据报错的最后一行,认定是因为当前线程事务没有结束引起的,为此浪费不少时间.具体源码如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+@Named
+\end_layout
+
+\begin_layout Plain Layout
+
+@RequestScope
+\end_layout
+
+\begin_layout Plain Layout
+
+public class TeacherController{
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Inject EntityManager em;
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Inject UserTransaction utx;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	//暂存待删除老师的姓名
+\end_layout
+
+\begin_layout Plain Layout
+
+	private String delectname;
+\end_layout
+
+\begin_layout Plain Layout
+
+	//省略getter/setter方法
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	public List<Teacher> getAll() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        try {
+\end_layout
+
+\begin_layout Plain Layout
+
+            utx.begin();
+\end_layout
+
+\begin_layout Plain Layout
+
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+\end_layout
+
+\begin_layout Plain Layout
+
+            cq.select(cq.from(Teacher.class));
+\end_layout
+
+\begin_layout Plain Layout
+
+            utx.commit();
+\end_layout
+
+\begin_layout Plain Layout
+
+            return em.createQuery(cq).getResultList();
+\end_layout
+
+\begin_layout Plain Layout
+
+        } catch (Exception e) {
+\end_layout
+
+\begin_layout Plain Layout
+
+            try {
+\end_layout
+
+\begin_layout Plain Layout
+
+                if (utx.getStatus() == Status.STATUS_ACTIVE
+\end_layout
+
+\begin_layout Plain Layout
+
+                        || utx.getStatus() == Status.STATUS_MARKED_ROLLBACK)
+ {
+\end_layout
+
+\begin_layout Plain Layout
+
+                    utx.rollback();
+\end_layout
+
+\begin_layout Plain Layout
+
+                }
+\end_layout
+
+\begin_layout Plain Layout
+
+            } catch (Exception ex) {
+\end_layout
+
+\begin_layout Plain Layout
+
+                ex.printStackTrace(System.err);
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void delete() throws Exception {
+\end_layout
+
+\begin_layout Plain Layout
+
+        try {
+\end_layout
+
+\begin_layout Plain Layout
+
+            Teacher deleteTea = teacherService.findByTeaName(deletename);
+\end_layout
+
+\begin_layout Plain Layout
+
+            if (deleteTea != null) {
+\end_layout
+
+\begin_layout Plain Layout
+
+                deleteTeacher = deleteTea;
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+            utx.begin();
+\end_layout
+
+\begin_layout Plain Layout
+
+			//错误用法
+\end_layout
+
+\begin_layout Plain Layout
+
+			em.remove(deleteTeacher);
+\end_layout
+
+\begin_layout Plain Layout
+
+			//正确用法
+\end_layout
+
+\begin_layout Plain Layout
+
+            teacherService.remove(deleteTeacher);
+\end_layout
+
+\begin_layout Plain Layout
+
+            System.out.println("usertransation:" + utx.getStatus());
+\end_layout
+
+\begin_layout Plain Layout
+
+            utx.commit();
+\end_layout
+
+\begin_layout Plain Layout
+
+            facesContext.addMessage(null, new FacesMessage("您选中的教师已从数据库中删除"));
+\end_layout
+
+\begin_layout Plain Layout
+
+        } finally {
+\end_layout
+
+\begin_layout Plain Layout
+
+            logger.log(Level.INFO, "Teacher Delete Called:{0}", deleteTeacher.toStr
+ing());
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+保存信息如下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\footnotesize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+15:02:12,264 ERROR [io.undertow.request] (default task-29) UT005023: Exception
+ handling request to /EJOS_test/admin/teacher_manager.jsf: javax.servlet.ServletExc
+eption: javax.servlet.ServletException: java.lang.IllegalArgumentException:
+ Removing a detached instance cn.edu.sdut.softlab.entity.Teacher#52
+\end_layout
+
+\begin_layout Plain Layout
+
+	at org.jboss.weld.probe.ProbeFilter$FilterAction.doFilter(ProbeFilter.java:338)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at org.jboss.weld.probe.ProbeFilter.embedInfoSnippet(ProbeFilter.java:186)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at org.jboss.weld.probe.ProbeFilter.doFilter(ProbeFilter.java:174)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.core.ManagedFilter.doFilter(ManagedFilter.java:61)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.
+java:131)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.FilterHandler.handleRequest(FilterHandler.java:84)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.security.ServletSecurityRoleHandler.handleRequest(Ser
+vletSecurityRoleHandler.java:62)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletDispatchingHandler.handleRequest(ServletDispa
+tchingHandler.java:36)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at org.wildfly.extension.undertow.security.SecurityContextAssociationHandler.handleRe
+quest(SecurityContextAssociationHandler.java:78)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:4
+3)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.security.SSLInformationAssociationHandler.handleReque
+st(SSLInformationAssociationHandler.java:131)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.security.ServletAuthenticationCallHandler.handleReque
+st(ServletAuthenticationCallHandler.java:57)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:4
+3)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.security.handlers.AbstractConfidentialityHandler.handleRequest(Abstra
+ctConfidentialityHandler.java:46)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.security.ServletConfidentialityConstraintHandler.hand
+leRequest(ServletConfidentialityConstraintHandler.java:64)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.security.handlers.AuthenticationMechanismsHandler.handleRequest(Authe
+nticationMechanismsHandler.java:60)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.security.CachedAuthenticatedSessionHandler.handleRequ
+est(CachedAuthenticatedSessionHandler.java:77)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.security.handlers.NotificationReceiverHandler.handleRequest(Notificat
+ionReceiverHandler.java:50)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.security.handlers.AbstractSecurityContextAssociationHandler.handleReq
+uest(AbstractSecurityContextAssociationHandler.java:43)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:4
+3)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at org.wildfly.extension.undertow.security.jacc.JACCContextIdHandler.handleRequest(JAC
+CContextIdHandler.java:61)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:4
+3)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:4
+3)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInit
+ialHandler.java:292)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$100(ServletInitialHandl
+er.java:81)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.ja
+va:138)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.ja
+va:135)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletReq
+uestContextThreadSetupAction.java:48)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderS
+etupAction.java:43)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.api.LegacyThreadSetupActionWrapper$1.call(LegacyThreadSetupAc
+tionWrapper.java:44)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitial
+Handler.java:272)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$000(ServletInitialHandl
+er.java:81)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitial
+Handler.java:104)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.Connectors.executeRootHandler(Connectors.java:202)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:805)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+\end_layout
+
+\begin_layout Plain Layout
+
+	at java.lang.Thread.run(Thread.java:745)
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+\end_layout
+
+\begin_layout Plain Layout
+
+15:02:12,268 ERROR [org.jboss.as.txn] (default task-29) WFLYTX0003: APPLICATION
+ ERROR: transaction still active in request with status 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+错因讲解:
+\end_layout
+
+\begin_layout Standard
+如上根据待删除老师姓名查询对应实体对象时用的是teacherService,但是后面是用的entitymanager对象来实现的删除操作.在容器中,两个entit
+ymanager是互不干扰的,teacherService中有自己的entitymanager,查询的时候用的是这个,然而删除操作的时候使用到确实control
+ler自己的entitymanager.最终导致Controller类中的entitymanager找不到要它删除的实体对象,所以出现detached错误.因为之前
+由teacherService查询的,因为还没结束操作(UserTransaction结束的标志为rollback或者commit),所以之后再进行事务操作的时
+候,会提示最后的:当前请求仍有事务处于活跃状态,而并非之前的查询所有的方法未结束(最初的错误判断).
+\end_layout
+
+\begin_layout Section*
+总结
+\end_layout
+
+\begin_layout Standard
+所以,之后在进行操作的时候,注意使用注入组件的作用范围和周期.最后,建议自行准备类似于高中错题本一样的记录工具整理自己遇到的错误和问题,积少成多,相信终将会达成自
+己的目标的.
+\end_layout
+
+\end_body
+\end_document
