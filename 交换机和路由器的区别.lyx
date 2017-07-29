@@ -1,0 +1,211 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+转:交换机和路由器的区别
+\end_layout
+
+\begin_layout Standard
+很多人的弱电朋友认为这两个都是用来上网的，甚至是很多学习完计算机网络的学生也不能很清楚的讲明白他们到底有什么区别的，就不清楚是怎么回事了。交换机和路由器的区别到
+底在哪里呢？
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Internet/Switchboard.jpeg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+交换机和路由器区别
+\end_layout
+
+\begin_layout Standard
+区别之一
+\end_layout
+
+\begin_layout Standard
+路由器可以给你的局域网自动分配IP，虚拟拨号，就像一个交通警察，指挥着你的电脑该往哪走，你自己不用操心那么多了。交换机只是用来分配网络数据的。
+\end_layout
+
+\begin_layout Standard
+区别之二
+\end_layout
+
+\begin_layout Standard
+路由器在网络层，路由器根据IP地址寻址，路由器可以处理TCP/IP协议，交换机不可以。
+\end_layout
+
+\begin_layout Standard
+交换机在中继层，交换机根据MAC地址寻址。
+\end_layout
+
+\begin_layout Standard
+区别之三
+\end_layout
+
+\begin_layout Standard
+路由器可以把一个IP分配给很多个主机使用，这些主机对外只表现出一个IP。交换机可以把很多主机连起来，这些主机对外各有各的IP。
+\end_layout
+
+\begin_layout Standard
+区别之四
+\end_layout
+
+\begin_layout Standard
+路由器提供防火墙的服务，交换机不能提供该功能。集线器、交换机都是做端口扩展的，就是扩大局域网(通常都是以太网)的接入点，也就是能让局域网可以连进来更多的电脑。路
+由器是用来做网间连接，也就是用来连接不同的网络。
+\end_layout
+
+\begin_layout Standard
+区别之五
+\end_layout
+
+\begin_layout Subsection*
+举个例子：
+\end_layout
+
+\begin_layout Standard
+路由器相当于邮局，把信投递到收件人地址，它的任务就完成了。但是信邮到了你们宿舍楼，而这个地址不是你一个人专享的，所以楼管王大爷还要负责把信给到你手里，他不会关心
+收件人地址，只看收件人姓名，然后打个内线电话叫你来取信。
+\end_layout
+
+\begin_layout Standard
+如果没有邮局，你没法向世界各地的漂亮妹子们发信，也没法从楼外的漂亮妹子那里收信。但是因为楼管王大爷的存在，你仍然可以通过他与同宿舍楼的好基友书信往来。
+\end_layout
+
+\begin_layout Standard
+所有邮局构成的系统，就是“广域网”，而你的宿舍楼，就是“局域网”，构建局域网是不需要路由器的。
+\end_layout
+
+\begin_layout Section*
+三层交换机和路由器的区别
+\end_layout
+
+\begin_layout Standard
+虽然他们都具有路由功能。
+\end_layout
+
+\begin_layout Standard
+但是三层交换机的主要功能仍是数据交换，它的路由功能通常比较简单，因为它所面对的主要是简单的局域网连接，路由路径远没有路由器那么复杂，它用在局域网中的主要用途还是
+提供快速数据交换功能，满足局域网数据交换频繁的应用特点。
+\end_layout
+
+\begin_layout Standard
+路由器的主要功能还是路由功能，它的路由功能更多的体现在不同类型网络之间的互联上，如局域网与广域网之间的连接、不同协议的网络之间的连接等，所以路由器主要是用于不同
+类型的网络之间。它最主要的功能就是路由转发，解决好各种复杂路由路径网络的连接就是它的最终目的，所以路由器的路由功能通常非常强大，不仅适用于同种协议的局域网间，更
+适用于不同协议的局域网与广域网间。它的优势在于选择最佳路由、负荷分担、链路备份及和其他网络进行路由信息的交换等等路由器所具有功能。为了与各种类型的网络连接，路由
+器的接口类型非常丰富，而三层交换机则一般仅同类型的局域网接口，非常简单。
+\end_layout
+
+\begin_layout Standard
+从技术上讲，路由器和三层交换机在数据包交换操作上存在着明显区别。路由器一般由基于微处理器的软件路由引擎执行数据包交换，而三层交换机通过硬件执行数据包交换。三层交
+换机在对第一个数据流进行路由后，它将会产生一个MAC地址与IP地址的映射表，当同样的数据流再次通过时，将根据此表直接从二层通过而不是再次路由，从而消除了路由器进
+行路由选择而造成网络的延迟，提高了数据包转发的效率。同时，三层交换机的路由查找是针对数据流的，它利用缓存技术，很容易利用ASIC技术来实现，因此，可以大大节约成
+本，并实现快速转发。而路由器的转发采用最长匹配的方式，实现复杂，通常使用软件来实现，转发效率较低。
+\end_layout
+
+\begin_layout Standard
+正因如此，从整体性能上比较的话，三层交换机的性能要远优于路由器，非常适用于数据交换频繁的局域网中；而路由器虽然路由功能非常强大，但它的数据包转发效率远低于三层交
+换机，更适合于数据交换不是很频繁的不同类型网络的互联，如局域网与互联网的互联。如果把路由器，特别是高档路由器用于局域网中，则在相当大程度上是一种浪费(就其强大的
+路由功能而言)，而且还不能很好地满足局域网通信性能需求，影响子网间的正常通信综上所述，在局域网中进行多子网连接，最好还选用三层交换机，特别是在不同子网数据交换频
+繁的环境中。一方面可以确保子网间的通信性能需求，另一方面省去了另外购买交换机的投资。当然，如果子网间的通信不是很频繁，采用路由器也无可厚非，也可达到子网安全隔离
+相互通信的目的。具体要根据实际需求来定。
+\end_layout
+
+\begin_layout Standard
+三层交换与路由最大的区别就在于：路由支持nat转换，而三层不支持。在实际工程中体现出来就在：路由上直接接光纤可以上网，而将光纤接到层三设备上是不能上网了。三层每
+个端口都有专用的mac地址，有专用的ASIC集成电路。
+\end_layout
+
+\begin_layout Section*
+网络交换机和路由器的区别
+\end_layout
+
+\begin_layout Standard
+网络交换机，是一个扩大网络的器材，能为子网络中提供更多的连接端口，以便连接更多的计算机。随着通信业的发展以及国民经济信息化的推进，网络交换机市场呈稳步上升态势。
+它具有性能价格比高、高度灵活、相对简单、易于实现等特点。所以，以太网技术已成为当今最重要的一种局域网组网技术，网络交换机也就成为了最普及的交换机。
+\end_layout
+
+\begin_layout Standard
+路由器(Router)，是连接因特网中各局域网、广域网的设备，它会根据信道的情况自动选择和设定路由，以最佳路径，按前后顺序发送信号。路由器是互联网络的枢纽，"交
+通警察"。目前路由器已经广泛应用于各行各业，各种不同档次的产品已成为实现各种骨干网内部连接、骨干网间互联和骨干网与互联网互联互通业务的主力军。路由和交换机之间的
+主要区别就是交换机发生在OSI参考模型第二层(数据链路层)，而路由发生在第三层，即网络层。这一区别决定了路由和交换机在移动信息的过程中需使用不同的控制信息，所以
+说两者实现各自功能的方式是不同的。
+\end_layout
+
+\end_body
+\end_document
