@@ -1,0 +1,402 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Maven各个版本json依赖及其日常填坑
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+1.20070829
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20070829</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+2.20080701
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20080701</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+3.20090211
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20090211</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+4.20131018
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20131018</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+5.20140107
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20140107</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+6.20141113
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20141113</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+7.20141113
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20141113</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+8.20150729
+\end_layout
+
+\begin_layout Plain Layout
+
+<dependency>
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>org.json</groupId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json</artifactId>
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>20150729</version>
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+*注意
+\end_layout
+
+\begin_layout Standard
+1.在2013之前的版本中JSONArray中没有remove的方法
+\end_layout
+
+\begin_layout Standard
+2.get是获取Object（eg:{"name":"helen","sex":"0"}）
+\end_layout
+
+\begin_layout Standard
+3.getString是获取相应键的值（eg:getString("name")）获取到的值是helen
+\end_layout
+
+\begin_layout Standard
+*具体详细是在
+\end_layout
+
+\begin_layout Standard
+http://mvnrepository.com/artifact/org.json/json
+\end_layout
+
+\begin_layout Standard
+4.说说这个json-lib包和上面的json包的差异
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<dependency> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<groupId>net.sf.json-lib</groupId> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<artifactId>json-lib</artifactId> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<version>2.4</version> 
+\end_layout
+
+\begin_layout Plain Layout
+
+<classifier>jdk15</classifier> 
+\end_layout
+
+\begin_layout Plain Layout
+
+</dependency>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+说到这里，就是一个坑了，网上查资料，找到的方法都是json-lib里面的方法，就比如给JSONArray中的对象根据某个key排序，上面的json里面就没有将J
+SONArray转换成List的toList()方法。这就说明，如果你用json包，那你就得先把JSONArray转换成List，再进行排序，排序好了再转回来。
+\end_layout
+
+\end_body
+\end_document
