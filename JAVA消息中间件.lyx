@@ -1,0 +1,192 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+JAVA消息中间件理解概述
+\end_layout
+
+\begin_layout Section*
+什么是消息中间件
+\end_layout
+
+\begin_layout Subsection*
+什么是中间件
+\end_layout
+
+\begin_layout Standard
+这里用一段限制性从句来说明一下,就是非底层操作系统软件,非业务应用软件,不是直接给最红用户使用的,不能直接给用户带来价值的软件统称为中间件.
+\end_layout
+
+\begin_layout Subsection*
+消息中间件
+\end_layout
+
+\begin_layout Standard
+关注与数据的发送和接受,利用高效可靠的异步消息传递方式集成分布式系统.
+\end_layout
+
+\begin_layout Standard
+消息中间件,如果用自己的理解来说,是一种架构方式,实现系统各个部分组件功能的解耦,方便系统之后的扩展和修改.
+\end_layout
+
+\begin_layout Standard
+用两个图稍微说明一下:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Java/mq.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一般的业务设计时所用到的方式.如上图所示,假设有一个登录系统,用户登录成功之后,需要从登录系统处进行服务调用短息服务,通知用户登录成功.假设后面还有个积分服务,
+用户在登录成功之后相继调用积分服务为用户增加积分.之后类似的服务会一直增加,比如日志服务等.这个时候你会发现,我们的登录系统变的相当复杂,用户在登陆时会等待相当长的
+一段时间.因为用户在登陆时需要不停地调用外部的系统,如果说短信服务调用失败或者说中间某个调用失败之后,之后的便无法进行,整个登录操作也会失败.这就是通过服务调用的方
+式来感知系统事件的发生,这种方式需要系统之间以高耦合的方式相互连接.
+\end_layout
+
+\begin_layout Standard
+下图为通过消息中间件的方式:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Java/mq_message.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在使用到消息中间件之后,这个时候,用户登录之后,通过登录系统发送消息到消息中间件,然后消息中间件通过异步发送的方式来,来通知其他系统.通过这种方式,用户不在需要等
+待其他各个服务处理完成才返回登录结果.
+\end_layout
+
+\begin_layout Standard
+如果难以理解的话,其实一个简单的例子就可以说明,比如微信上面的公众号,公众号的运营者就相当于消息的发送者,而所有订阅公众号的用户相当于用户的消费者.
+\end_layout
+
+\begin_layout Section*
+消息中间件带来的好处
+\end_layout
+
+\begin_layout Itemize
+解耦
+\end_layout
+
+\begin_layout Itemize
+异步调用
+\end_layout
+
+\begin_layout Itemize
+便于横向扩展
+\end_layout
+
+\begin_layout Itemize
+安全可靠
+\end_layout
+
+\begin_layout Itemize
+顺序保证
+\end_layout
+
+\begin_layout Section*
+消息中间件图示
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename imgs/Java/middle_message.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图示已经很明显,这里不需要过多叙述.
+\end_layout
+
+\end_body
+\end_document
