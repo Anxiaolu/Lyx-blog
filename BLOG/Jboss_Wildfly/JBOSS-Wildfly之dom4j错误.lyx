@@ -72,28 +72,25 @@
 \begin_body
 
 \begin_layout Title
-CentOS源码编译更换gcc版本
-\end_layout
-
-\begin_layout Section
-前言
+JBOSS-Wildfly之dom4j错误
 \end_layout
 
 \begin_layout Standard
-之前编译qt的一个项目的时候,换到刚安装完的Centos6.8的虚拟机环境下编译,一直出现如下错误,如图:
-\begin_inset Graphics
-	filename imgs/C++/qt-gcc-versionerror.png
-	lyxscale 50
-	scale 40
+在使用wildlfy时,当dom4j包的使用或者说是有的包需要依赖于它的时候需要注意.在wildlfy10(因为现在普遍的都用的10,maven为3.3.9)的mod
+ules目录下这里是服务器自带的相关jar包,当你使用的包中和系统出现冲突的时候,就会出错如下:
+\end_layout
 
-\end_inset
+\begin_layout Section*
+情形一(deploy-error):
+\end_layout
 
-
+\begin_layout Standard
+在pom文件里使用了dom4j包或者说间接依赖于dom4j的包,就会报如下错误:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/C++/Centos6.8-default-gccversion.png
+	filename ../../imgs/JBOSS-Wildfly/dom4j-deploy-error.png
 	lyxscale 50
 	scale 50
 
@@ -103,77 +100,77 @@ CentOS源码编译更换gcc版本
 \end_layout
 
 \begin_layout Standard
-经过仔细查资料,是gcc版本过低导致的,因为Centos6.8默认的gcc4.4.7的版本是无法编译C++11的,所以要想解决,就要更换高版本的gcc.
+单单只是从上述错误的最后面来看,只是说应用没有初始化,其xml文件的配置文档无法读取导致,也就是说dom4j包没有起到作用,上面一段说的正是dom4jjar包无
+法映射的问题.其根本原因是系统里面的dom4j包和项目里面的冲突导致系统不知道该使用哪一个.
 \end_layout
 
-\begin_layout Section
-下载安装gcc高版本
-\end_layout
-
-\begin_layout Standard
-我这里下载的是6.1的版本(源码可以去mirrors.ustc.edu.cn官网去找).
-\end_layout
-
-\begin_layout Subsection
-下载完成之后解压.
-\end_layout
-
-\begin_layout Subsection
-以下是编译的具体细节
+\begin_layout Subsection*
+解决方法:
 \end_layout
 
 \begin_layout Standard
-在编译的时候要仔细,不然你会后悔的(做好重装系统的准备,还好我用的是虚拟机^-^!).
-\end_layout
-
-\begin_layout Enumerate
-执行 ./contrib/download_prerequisites ，不要问为什么，其实它是为了下载一些需要依赖的库，以及做好配置工作
-\end_layout
-
-\begin_layout Enumerate
-创建一个文件用来存放编译的文件，进入该文件
-\end_layout
-
-\begin_layout Enumerate
-执行 ../configure -enable-checking=release -enable-languages=c,c++ -disable-multilib
-\end_layout
-
-\begin_layout Enumerate
-make(make -j4，这样是多核的系统使用，我使用的是虚拟机，所以使用make选项)
-\end_layout
-
-\begin_layout Enumerate
-上面的过程我们都知道很漫长，这段时间最好先睡一觉或者写几道算法题，然后再回来看看(亲自体验过,确实够长)
-\end_layout
-
-\begin_layout Enumerate
-上面步骤完成后看看有没有错误，没有错误就 make install
-\end_layout
-
-\begin_layout Enumerate
-最后 g++ --version 检查版本
+可以使用mvn dependency:tree命令来查看一下当前项目中所使用到的jar及其依赖包.检查一下是否使用到了dom4j包,当然你也可以直接通过ide工具
+来查看.
 \end_layout
 
 \begin_layout Standard
-至此安装完成。
+使用mvn命令查看结果如下:
 \end_layout
 
 \begin_layout Standard
-——补充一些东西：
+\begin_inset Graphics
+	filename ../../imgs/Maven/mvn-plugin/mvn-dependency:tree.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-1.
- 动态库需要更新，因为GCC升级了，动态库也需要升级。
+删除掉使用的跟dom4j相关的依赖包,重启wildlfy,重新部署之后就可以可.
+\end_layout
+
+\begin_layout Section*
+情形二:
 \end_layout
 
 \begin_layout Standard
-2.
- gdb版本也需要升级的，否则无法调试，我安装之后才发现这个问题的。
+启动wildlfy时出现跟dom4j相关错误(具体截图暂时没有).
 \end_layout
 
 \begin_layout Standard
-安装之后记得把动态库以及gdb都更新一下（都是版本低了的原因）。
+具体原因很可能是跟你的服务器项目缓存有关.
+\end_layout
+
+\begin_layout Standard
+请记住三个地方:
+\end_layout
+
+\begin_layout Standard
+$JBOSS_HOME/standalone/configuration/standalone.xml文件的最后:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/JBOSS-Wildfly/standalone.xml.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里是你之前在服务器上部署的项目的记录,跟具体的$JBOSS_HOME/standalone/data/content目录里面是一一对应的.
+\end_layout
+
+\begin_layout Standard
+要清除这两个地方文件,还有一个地方就是$JBOSS_HOME/standalone/tmp目录同样需要清理.
+\end_layout
+
+\begin_layout Standard
+清理完成之后重新启动即可.
 \end_layout
 
 \end_body

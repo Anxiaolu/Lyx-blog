@@ -89,7 +89,7 @@
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/install-build.png
+	filename ../../imgs/Maven/maven新建项目速度慢/install-build.png
 	lyxscale 50
 	scale 50
 
@@ -124,7 +124,7 @@ ttp://repo1.maven.org/maven2/archetype-catalog.xml路径下载archetype-catalog.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/maven-remote.png
+	filename ../../imgs/Maven/maven新建项目速度慢/maven-remote.png
 	lyxscale 50
 	scale 50
 
@@ -151,7 +151,7 @@ ttp://repo1.maven.org/maven2/archetype-catalog.xml路径下载archetype-catalog.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/maven-remote-build.png
+	filename ../../imgs/Maven/maven新建项目速度慢/maven-remote-build.png
 	lyxscale 50
 	scale 50
 
@@ -166,7 +166,7 @@ ttp://repo1.maven.org/maven2/archetype-catalog.xml路径下载archetype-catalog.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/maven-internal-build.png
+	filename ../../imgs/Maven/maven新建项目速度慢/maven-internal-build.png
 	lyxscale 50
 	scale 50
 
@@ -181,7 +181,7 @@ ttp://repo1.maven.org/maven2/archetype-catalog.xml路径下载archetype-catalog.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/maven-local-build.png
+	filename ../../imgs/Maven/maven新建项目速度慢/maven-local-build.png
 	lyxscale 50
 	scale 50
 
@@ -228,7 +228,7 @@ remote为默认值,所以不需要设置.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/idea-internal-build.png
+	filename ../../imgs/Maven/maven新建项目速度慢/idea-internal-build.png
 	lyxscale 50
 	scale 50
 
@@ -252,7 +252,7 @@ etypeCatalog为local时，同样有以下两种方法： 在新建maven项目时
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/idea-local-build1.png
+	filename ../../imgs/Maven/maven新建项目速度慢/idea-local-build1.png
 	lyxscale 50
 	scale 50
 
@@ -271,7 +271,7 @@ etypeCatalog为local时，同样有以下两种方法： 在新建maven项目时
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Maven/maven新建项目速度慢/idea-local-build2.png
+	filename ../../imgs/Maven/maven新建项目速度慢/idea-local-build2.png
 	lyxscale 50
 	scale 50
 

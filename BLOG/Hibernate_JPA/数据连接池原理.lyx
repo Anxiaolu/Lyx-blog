@@ -241,7 +241,7 @@ conn.close();
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/JDBC/datapool.png
+	filename ../../imgs/JDBC/datapool.png
 	lyxscale 50
 	scale 50
 

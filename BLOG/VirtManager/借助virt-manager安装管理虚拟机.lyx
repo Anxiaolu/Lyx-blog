@@ -129,7 +129,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual.png
 	lyxscale 75
 	scale 75
 
@@ -148,7 +148,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual2.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual2.png
 	lyxscale 75
 	scale 75
 
@@ -159,7 +159,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual3.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual3.png
 	lyxscale 50
 	scale 50
 
@@ -174,7 +174,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual4.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual4.png
 	lyxscale 75
 	scale 75
 
@@ -185,7 +185,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual5.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual5.png
 	lyxscale 75
 	scale 75
 
@@ -201,7 +201,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual6.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual6.png
 	lyxscale 50
 	scale 50
 
@@ -212,7 +212,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual7.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual7.png
 	lyxscale 75
 	scale 75
 
@@ -231,7 +231,7 @@ Ubuntu直接apt-get virt-manager可以安装.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Virt-manager/KVM-newvirtual8.png
+	filename ../../imgs/Virt-manager/KVM-newvirtual8.png
 
 \end_inset
 

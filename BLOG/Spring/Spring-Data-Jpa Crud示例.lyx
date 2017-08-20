@@ -94,7 +94,7 @@ Spring-Data-Jpa Crud示例
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Spring/Spring-Data-Jpa/Repository_Demo_classrelationship.png
+	filename ../../imgs/Spring/Spring-Data-Jpa/Repository_Demo_classrelationship.png
 	lyxscale 50
 	scale 50
 

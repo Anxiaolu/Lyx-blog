@@ -95,7 +95,7 @@ Spring-Data-JPA有什么
 \begin_layout Standard
 \begin_inset External
 	template PDFPages
-	filename doc/Spring-Data-JPA概述.pdf
+	filename /home/huanlu/git/Lyx-blog/doc/Spring-Data-JPA概述.pdf
 	lyxscale 80
 
 \end_inset
@@ -109,7 +109,7 @@ Spring-Data-JPA有什么
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Spring/Spring-Data-Jpa/Spring-Data-Jpa_Repository.png
+	filename ../../imgs/Spring/Spring-Data-Jpa/Spring-Data-Jpa_Repository.png
 	lyxscale 60
 	scale 60
 

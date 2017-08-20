@@ -72,7 +72,40 @@
 \begin_body
 
 \begin_layout Title
-消息中间件之MQ相关
+Java之Timer定时任务调度时间工具详解
+\end_layout
+
+\begin_layout Section*
+Timer简介
+\end_layout
+
+\begin_layout Standard
+一种工具,后台线程用其安排以后在后台线程中执行的任务.可以安排任务只单独进行一次,或者定期重复执行.
+\end_layout
+
+\begin_layout Standard
+还有一种说法是:有且仅有一个后台县城对多个业务线程进行定时频率的调度.
+\end_layout
+
+\begin_layout Section*
+主要构件
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/JavaUtil/Timer.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里Timer可以理解为后台执行的线程,TimerTask可以理解为业务线程.
+\end_layout
+
+\begin_layout Standard
+工具类详解:
 \end_layout
 
 \end_body

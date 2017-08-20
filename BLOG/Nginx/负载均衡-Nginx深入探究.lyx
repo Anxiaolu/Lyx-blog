@@ -93,7 +93,7 @@ Nginx是一个反向代理服务器,其负载均衡也是基于反向代理来�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Nginx/Nginx反向代理.png
+	filename ../../imgs/Nginx/Nginx反向代理.png
 	scale 50
 
 \end_inset

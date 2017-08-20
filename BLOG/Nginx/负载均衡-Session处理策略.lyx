@@ -99,7 +99,7 @@ on对象中的变量将不会丢失,而是在整个用户的会话中一种存�
 
 \begin_layout Paragraph*
 \begin_inset Graphics
-	filename imgs/Nginx/Nginx负载均衡图解.png
+	filename ../../imgs/Nginx/Nginx负载均衡图解.png
 	lyxscale 25
 	scale 25
 
@@ -219,7 +219,7 @@ status open
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Nginx/Nginx-session-on_error.png
+	filename ../../imgs/Nginx/Nginx-session-on_error.png
 	lyxscale 50
 	scale 35
 

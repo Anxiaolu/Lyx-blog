@@ -1,0 +1,260 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Caused by: org.hibernate.PersistentObjectException: detached entity passed
+ to persist: com.xxx.Xxx 
+\end_layout
+
+\begin_layout Section*
+描述:
+\end_layout
+
+\begin_layout Standard
+环境描述:JSF2.2+PrimeFaces6.1+Jpa+Wildfly10.1
+\end_layout
+
+\begin_layout Standard
+具体原因描述:
+\end_layout
+
+\begin_layout Standard
+简单地说，发生此异常即是一个游离的对象要被持久化(save)时，其ID既要ORM框架为它生成ID值，而此实体的ID却已然有值。对于初学不长时间的新手来说可能会经
+常出现,就算老手也是,所以稍微细说一下吧(说实话,这次错的够粗心的).
+\end_layout
+
+\begin_layout Section*
+现场还原:
+\end_layout
+
+\begin_layout Standard
+下面是一个csv文件,通过这个文件批量导入学生信息(下面的只是写了一个测试用的):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/huanlu/git/Lyx-blog/imgs/JPA_hibernate_Exception/PersistentObjectException_example.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上传该文件之后,具体解析过程不再多描述方法很多,长传完成之后,根据每行的信息生成一个学生实体,但是在生成学生实体对象时,属性是一个个set进去的,但是我就是那么
+粗心,直接将这里的序号当做id直接set进去了(其实之前本来就是打算这么用的,忘记要注意这个了).所以导致了终端出现如下错误:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/huanlu/git/Lyx-blog/imgs/JPA_hibernate_Exception/PersistentObjectException.png
+	lyxscale 50
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让ORM为即将要持久的实体生成ID值(ORM的主键策略)，是典型的做法，例如有自增长(即便是DBMS来做)、UUID，Hibernate框架则更多。因此，不能手
+工为此实体赋上ID值。
+\end_layout
+
+\begin_layout Section*
+其他情况:
+\end_layout
+
+\begin_layout Standard
+对于有些人设计主要实体时，通常用UUID作主键，很显然它是字符型的。但是，有时会发现form表单为其赋一个长度为0的字符串，看html代码：
+\end_layout
+
+\begin_layout Standard
+<input name="id" type="text" id="id" value=""/>
+\end_layout
+
+\begin_layout Standard
+注意 value=""
+\end_layout
+
+\begin_layout Standard
+如果是增加，则不需要在form表单中安置这么个控件，通常将增加和修改实体在一个form表单中完成，然而大多数人很喜欢用Spring MVC。这时id字段被Spr
+ing MVC包装到实体中就有值了(其值是长度为0的空字符串)。ORM保存时上面的异常就来了。解决的办法很多，可以为其实体做一个属性编辑器，在编辑器判断ID是否
+为空且长度是否为0，若是，则置入一个null。在保存前检查一下ID也是一种解决办法。
+\end_layout
+
+\begin_layout Standard
+有时在一对一、一对多保存时，关联方也会存在这种情况，所以关键检查ID字段就可以了。
+\end_layout
+
+\begin_layout Section*
+关于Spring中的另外一个示例:
+\end_layout
+
+\begin_layout Standard
+环境:
+\end_layout
+
+\begin_layout Standard
+ssh+JPA2.0,有时候会出现让你摸不着头脑的一件事,重启服务器之后,在添加完一次add操作之后,如果第二次再添加,就会报如下错误:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+javax.persistence.PersistenceException: org.hibernate.PersistentObjectException:
+ detached entity passed to persist: com.dalton.domain.Department
+\end_layout
+
+\begin_layout Plain Layout
+
+org.hibernate.ejb.AbstractEntityManagerImpl.throwPersistenceException
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+而每次重启服务器有可以add一次，第二次报错。
+\end_layout
+
+\begin_layout Standard
+通过debug发现，第二次需要add的department对象没有更新，都是第一次产生那个，包括id值。换句话说当第二次插入department的时候，还没有实
+例化到数据库就有了ID值，而且这个ID值是第一次插入用户的ID，这是不正常，因为ID没有设置过，而且JPA默认的行为是只要指定了主键生成策略，主键就不能设置了，
+一旦不为空或者0就被认为是已经保存到了数据库中，一旦调用persist()方法就会抛出上面的异常。
+\end_layout
+
+\begin_layout Standard
+原因就是JavaBean Department的作用域设置错误了，采用了默认单例的设置，对于Action来说必须采用
+\end_layout
+
+\begin_layout Standard
+prototype（每次调用创建一个对象）的作用域，修改方法是：在 JavaBean Department 上就一个注解@Scope("prototype"),
+\end_layout
+
+\begin_layout Standard
+@Entity
+\end_layout
+
+\begin_layout Standard
+@Component("department")
+\end_layout
+
+\begin_layout Standard
+@Scope("prototype")
+\end_layout
+
+\begin_layout Standard
+@Table(name="Department")
+\end_layout
+
+\begin_layout Standard
+public class Department {
+\end_layout
+
+\begin_layout Standard
+/*部门id */
+\end_layout
+
+\begin_layout Standard
+private int id ;
+\end_layout
+
+\begin_layout Standard
+/*组织机构父级id */
+\end_layout
+
+\begin_layout Standard
+private int pid ;
+\end_layout
+
+\begin_layout Standard
+/*部门名 */
+\end_layout
+
+\begin_layout Standard
+private String name ;
+\end_layout
+
+\begin_layout Standard
+这样问题解决。
+\end_layout
+
+\end_body
+\end_document

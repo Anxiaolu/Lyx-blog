@@ -105,7 +105,7 @@ JAVA消息中间件理解概述
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Java/mq.png
+	filename ../../imgs/Java/mq.png
 	lyxscale 50
 	scale 50
 
@@ -127,7 +127,7 @@ JAVA消息中间件理解概述
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Java/mq_message.png
+	filename ../../imgs/Java/mq_message.png
 	lyxscale 50
 	scale 50
 
@@ -175,7 +175,7 @@ JAVA消息中间件理解概述
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Java/middle_message.png
+	filename ../../imgs/Java/middle_message.png
 	lyxscale 80
 	scale 80
 

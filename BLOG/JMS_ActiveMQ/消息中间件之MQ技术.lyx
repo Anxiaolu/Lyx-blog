@@ -113,7 +113,7 @@ JMS和AMQP对比图
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Java/diff_jms_amqp.png
+	filename ../../imgs/Java/diff_jms_amqp.png
 
 \end_inset
 
@@ -203,7 +203,7 @@ Partition,Consumer Group,有分区和消息消费者的分组.
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Java/diff_threemq.png
+	filename ../../imgs/Java/diff_threemq.png
 
 \end_inset
 

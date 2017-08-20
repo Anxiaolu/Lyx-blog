@@ -161,7 +161,7 @@ typedef  struct TreeNode
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/DataStructure/family.png
+	filename ../../imgs/DataStructure/family.png
 	lyxscale 70
 	scale 70
 

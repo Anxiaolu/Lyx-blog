@@ -93,7 +93,7 @@ SpringMVC的开发流程实际上都是按照请求→响应的流程来开发�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename imgs/Spring/Spring/Spring_Executionprocess.png
+	filename ../../imgs/Spring/Spring/Spring_Executionprocess.png
 	lyxscale 50
 	scale 30
 

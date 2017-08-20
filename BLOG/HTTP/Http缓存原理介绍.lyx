@@ -88,7 +88,7 @@ ag、响应头Cache-Control就足够了。因为这三个Http头就可以满足�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename git/Lyx-blog/imgs/http/catch_location.png
+	filename ../../imgs/http/catch_location.png
 	lyxscale 65
 	scale 65
 
@@ -114,7 +114,7 @@ ETag全称Entity Tag，用来标识一个资源。在具体的实现中，ETag�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename git/Lyx-blog/imgs/http/reponse_head.png
+	filename ../../imgs/http/reponse_head.png
 	lyxscale 80
 	scale 80
 
@@ -141,7 +141,7 @@ ETag全称Entity Tag，用来标识一个资源。在具体的实现中，ETag�
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename git/Lyx-blog/imgs/http/request_head.png
+	filename ../../imgs/http/request_head.png
 	lyxscale 70
 	scale 70
 
@@ -230,7 +230,7 @@ no-store
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename git/Lyx-blog/imgs/http/cache_control_strategy.jpg
+	filename ../../imgs/http/cache_control_strategy.jpg
 	lyxscale 50
 	scale 50
 
