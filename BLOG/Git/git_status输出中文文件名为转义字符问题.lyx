@@ -72,7 +72,7 @@
 \begin_body
 
 \begin_layout Title
-git status输出中文文件名为转义字符(乱码)问题
+git status输出中文文件名为转义字符问题
 \end_layout
 
 \begin_layout Standard
