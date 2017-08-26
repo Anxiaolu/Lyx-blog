@@ -1,0 +1,208 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+JMS规范概述
+\end_layout
+
+\begin_layout Section*
+相关概念
+\end_layout
+
+\begin_layout Standard
+提供者:实现JMS规范的消息中间件服务器
+\end_layout
+
+\begin_layout Standard
+客户端:放或接受消息的应用程序
+\end_layout
+
+\begin_layout Standard
+生产者/发布者:创建并发送消息的客户端.
+\end_layout
+
+\begin_layout Standard
+消费者/订阅者:接受并处理消息的客户端
+\end_layout
+
+\begin_layout Standard
+消息模式:在客户端之间传递消息的方式,JMS中定义了主题和队列两种模式.
+\end_layout
+
+\begin_layout Section*
+两种模型的区分:
+\end_layout
+
+\begin_layout Subsection*
+队列模型:
+\end_layout
+
+\begin_layout Standard
+1.队列中的消息只能被一个消费者消费(也就是说同一个消息不能被多个消费者消费)
+\end_layout
+
+\begin_layout Standard
+2.消费者可以随时随地的消费队列中的消息
+\end_layout
+
+\begin_layout Standard
+具体模型如下图:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/Java/queuqMQ.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+主题模式:
+\end_layout
+
+\begin_layout Standard
+1.主题中的消息被所有订阅者消费(本质区别)
+\end_layout
+
+\begin_layout Standard
+2.消费者不能消费订阅之前就发送到主题中的消息
+\end_layout
+
+\begin_layout Standard
+具体模型如下图:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/Java/topicMQ.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+具体接口功能及其之间关系:
+\end_layout
+
+\begin_layout Standard
+ConnectionFacotry:用于创建连接到消息中间件的链接工厂
+\end_layout
+
+\begin_layout Standard
+Connection:代表了应用程序和消息服务器之间的通信链路
+\end_layout
+
+\begin_layout Standard
+Destination:指消息发布和接受的地点,包括队列或主题
+\end_layout
+
+\begin_layout Standard
+Session:表示一个单线程的上下文,用于发送和接受消息.
+\end_layout
+
+\begin_layout Standard
+MessageConsumer:由回话创建,用于接受发送到目标的消息.
+\end_layout
+
+\begin_layout Standard
+MessageProducer:由回话创建,用于发送消息到目标.
+\end_layout
+
+\begin_layout Standard
+Message:是在消费者和生产者之间传送的对象,消息头.一组消息属性,一个消息体.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/Java/JMS_ApI_releation.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+具体的代码演示,在看完上述图示之后,应该很容易就写得出来.
+\end_layout
+
+\end_body
+\end_document
