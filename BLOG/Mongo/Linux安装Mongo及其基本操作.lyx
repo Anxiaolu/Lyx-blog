@@ -1,0 +1,779 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Linux安装MongoDB及其基本操作
+\end_layout
+
+\begin_layout Standard
+Mongo说实话,刚开始一上来没觉得它多好用,倒是问题遇到了一堆,可能是从关系型数据库转过来不习惯吧.还好有资料可查,单单为了一个退出之后重进进不去,就磨了将近2
+个小时,原因是mongod的进程被关掉了,我也是有点服了我自己了,然后给自己的将近一下午的折腾写个总结吧.
+\end_layout
+
+\begin_layout Section
+安装部署mongo
+\end_layout
+
+\begin_layout Subsection
+下载安装包
+\end_layout
+
+\begin_layout Standard
+可以去官网下载,找自己想要的版本(https://www.mongodb.com/),或者去github下载源码编译安装.
+\end_layout
+
+\begin_layout Subsection
+创建目录
+\end_layout
+
+\begin_layout Standard
+mongo在使用的时候跟大多数据库一样需要有自己的数据目录,为了方便,我直接放到MongoDB的目录里了
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mkdir data
+\end_layout
+
+\begin_layout Plain Layout
+
+mkdir log
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+解压 并修改文件名
+\end_layout
+
+\begin_layout Standard
+mv mongodb-linux-x86_64-ubuntu1604-3.4.7 MongoDB
+\end_layout
+
+\begin_layout Subsection
+进入mongo目录
+\end_layout
+
+\begin_layout Subsection
+创建配置文件
+\end_layout
+
+\begin_layout Standard
+– mkdir conf
+\end_layout
+
+\begin_layout Standard
+– cd conf
+\end_layout
+
+\begin_layout Standard
+– vim conf.properties
+\end_layout
+
+\begin_layout Standard
+#端口
+\end_layout
+
+\begin_layout Standard
+port=27017
+\end_layout
+
+\begin_layout Standard
+#db存放的目录
+\end_layout
+
+\begin_layout Standard
+dbpath=/opt/mongotest/data/db
+\end_layout
+
+\begin_layout Standard
+#后台启动需要配置日志输出
+\end_layout
+
+\begin_layout Standard
+logpath=/opt/mongotest/single/mongo/log/mongo.log
+\end_layout
+
+\begin_layout Standard
+#日志模式
+\end_layout
+
+\begin_layout Standard
+logappend=true
+\end_layout
+
+\begin_layout Standard
+#设置成后台启动
+\end_layout
+
+\begin_layout Standard
+fork=true
+\end_layout
+
+\begin_layout Standard
+ps:后面与权限认证相关的先不设置
+\end_layout
+
+\begin_layout Subsection
+启动mongo
+\end_layout
+
+\begin_layout Standard
+mongo目录执行
+\end_layout
+
+\begin_layout Standard
+./bin/mongod -f conf/conf.properties
+\end_layout
+
+\begin_layout Standard
+(记住,如果要登录的话,这个进程不要关掉)
+\end_layout
+
+\begin_layout Standard
+启动mongodb
+\end_layout
+
+\begin_layout Standard
+日志输出：
+\end_layout
+
+\begin_layout Standard
+root@chwx2:/opt/mongotest/single/mongo# ./bin/mongod -f conf/conf.properties
+\end_layout
+
+\begin_layout Standard
+about to fork child process, waiting until server is ready for connections.
+\end_layout
+
+\begin_layout Standard
+forked process: 4988
+\end_layout
+
+\begin_layout Standard
+all output going to: /opt/mongotest/single/mongo/log/mongo.log
+\end_layout
+
+\begin_layout Standard
+child process started successfully, parent exiting
+\end_layout
+
+\begin_layout Standard
+表示后台启动mongo成功
+\end_layout
+
+\begin_layout Section
+使用mongo进行日常操作
+\end_layout
+
+\begin_layout Subsection
+连接mongodb
+\end_layout
+
+\begin_layout Standard
+mongo/bin目录下执行
+\end_layout
+
+\begin_layout Standard
+./mongo
+\end_layout
+
+\begin_layout Subsection
+查看数据库
+\end_layout
+
+\begin_layout Standard
+show dbs
+\end_layout
+
+\begin_layout Subsection
+查看当前所在数据库
+\end_layout
+
+\begin_layout Standard
+db
+\end_layout
+
+\begin_layout Subsection
+创建数据库
+\end_layout
+
+\begin_layout Standard
+use openfire （临时创建 如果不做操作 则离开后被系统删除）
+\end_layout
+
+\begin_layout Subsection
+在当前数据库删除当前数据库
+\end_layout
+
+\begin_layout Standard
+db.dropDatabase()
+\end_layout
+
+\begin_layout Subsection
+查看当前库的所有用户
+\end_layout
+
+\begin_layout Standard
+show users
+\end_layout
+
+\begin_layout Subsection
+查看集合(或者叫表)
+\end_layout
+
+\begin_layout Standard
+show collections
+\end_layout
+
+\begin_layout Subsection
+创建集合
+\end_layout
+
+\begin_layout Standard
+db.createCollection(“mycollection”)
+\end_layout
+
+\begin_layout Subsection
+创建集合
+\end_layout
+
+\begin_layout Standard
+(当插入一条数据时,不存在mongodb会帮我们创建，和创建数据库同理)
+\end_layout
+
+\begin_layout Standard
+db.MySecondCollection.insert({“name” : “ming”})
+\end_layout
+
+\begin_layout Subsection
+删除当前库的一个集合
+\end_layout
+
+\begin_layout Standard
+db.CollectionName.drop()
+\end_layout
+
+\begin_layout Subsection
+插入一条数据
+\end_layout
+
+\begin_layout Standard
+db.MyFirstCollection.insert({“_id”:”3”,”title”:”mongotest”,”description”:”this
+ is test”})
+\end_layout
+
+\begin_layout Standard
+注意:插入的都是JSON形式的,所以一定要用{},否则会报错:
+\end_layout
+
+\begin_layout Standard
+Sat Mar 19 14:22:39.160 SyntaxError: Unexpected token :
+\end_layout
+
+\begin_layout Subsection
+插入一条_id存在的数据
+\end_layout
+
+\begin_layout Standard
+db.MyFirstCollection.insert({“_id”:”3”,”title”:”mm”})
+\end_layout
+
+\begin_layout Standard
+输出:E11000 duplicate key error index: openfire.MyFirstCollection.$_id_ dup
+ key: { : “3” }
+\end_layout
+
+\begin_layout Standard
+解释:_id即是mongodb的默认主键,默认自动生成,我们可以直接设置以达到我们想要的目的
+\end_layout
+
+\begin_layout Standard
+问:插入一条和原来集合完全不一样的数据可以吗？
+\end_layout
+
+\begin_layout Standard
+答:可以,所以我们要在程序中规避,手动指定我们一个集合里面的字段,否则就无法实现查询及其他功能了
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> db.MyFirstCollection.insert({"newTitle":"null"})
+\end_layout
+
+\begin_layout Plain Layout
+
+> db.MyFirstCollection.find();
+\end_layout
+
+\begin_layout Plain Layout
+
+{ "_id" : "3", "title" : "new title", "description" : "this is test" }
+\end_layout
+
+\begin_layout Plain Layout
+
+{ "_id" : ObjectId("56ecf4fe0dceecace97c4506"), "newTitle" : "null" }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+查看集合第一条记录
+\end_layout
+
+\begin_layout Standard
+db.MySecondCollection.findOne();
+\end_layout
+
+\begin_layout Standard
+输出:{ “_id” : ObjectId(“56ecde0662552d15c443dd4a”), “name” : “ming” }
+\end_layout
+
+\begin_layout Subsection
+查找一条/多条特定数据
+\end_layout
+
+\begin_layout Standard
+db.MySecondCollection.findOne({“name”:”ming”})
+\end_layout
+
+\begin_layout Standard
+输出:{ “_id” : ObjectId(“56ecde0662552d15c443dd4a”), “name” : “ming” }
+\end_layout
+
+\begin_layout Subsection
+更新一条记录
+\end_layout
+
+\begin_layout Standard
+db.MyFirstCollection.update({“title”:”mongotest”},{$set:{“title”:”new title”}},tru
+e,false)
+\end_layout
+
+\begin_layout Standard
+结果:
+\end_layout
+
+\begin_layout Standard
+db.MyFirstCollection.findOne()
+\end_layout
+
+\begin_layout Standard
+{ “_id” : “3”, “title” : “new title”, “description” : “this is test” }
+\end_layout
+
+\begin_layout Standard
+update详解
+\end_layout
+
+\begin_layout Standard
+db.collection.update(criteria,objNew,upsert,multi)
+\end_layout
+
+\begin_layout Standard
+criteria：查询条件
+\end_layout
+
+\begin_layout Standard
+objNew：update对象和一些更新操作符
+\end_layout
+
+\begin_layout Standard
+upsert：如果不存在update的记录，是否插入objNew这个新的文档，true为插入，默认为false，不插入。
+\end_layout
+
+\begin_layout Standard
+multi：默认是false，只更新找到的第一条记录。如果为true，把按条件查询出来的记录全部更新。
+\end_layout
+
+\begin_layout Standard
+更新操作符：
+\end_layout
+
+\begin_layout Standard
+1.$inc
+\end_layout
+
+\begin_layout Standard
+用法：{$inc:{field:value}}
+\end_layout
+
+\begin_layout Standard
+作用：对一个数字字段的某个field增加value
+\end_layout
+
+\begin_layout Standard
+示例：db.students.update({name:"student"},{$inc:{age:5}})
+\end_layout
+
+\begin_layout Standard
+2.$set
+\end_layout
+
+\begin_layout Standard
+用法：{$set:{field:value}}
+\end_layout
+
+\begin_layout Standard
+作用：把文档中某个字段field的值设为value
+\end_layout
+
+\begin_layout Standard
+示例：db.students.update({name:"student"},{$set:{age:23}})
+\end_layout
+
+\begin_layout Standard
+3.$unset
+\end_layout
+
+\begin_layout Standard
+用法：{$unset:{field:1}}
+\end_layout
+
+\begin_layout Standard
+作用：删除某个字段field
+\end_layout
+
+\begin_layout Standard
+示例： db.students.update({name:"student"},{$unset:{age:1}})
+\end_layout
+
+\begin_layout Standard
+4.$push
+\end_layout
+
+\begin_layout Standard
+用法：{$push:{field:value}}
+\end_layout
+
+\begin_layout Standard
+作用：把value追加到field里。注：field只能是数组类型，如果field不存在，会自动插入一个数组类型
+\end_layout
+
+\begin_layout Standard
+示例：db.students.update({name:"student"},{$push:{"title":"major"}}
+\end_layout
+
+\begin_layout Standard
+5.$rename
+\end_layout
+
+\begin_layout Standard
+用法：{$rename:{old_field_name:new_field_name}}
+\end_layout
+
+\begin_layout Standard
+作用：对字段进行重命名(不是值,是字段)
+\end_layout
+
+\begin_layout Standard
+示例：db.students.update({name:"student"},{$rename:{"name":"newname"}})
+\end_layout
+
+\begin_layout Section
+设置用户权限及访问
+\end_layout
+
+\begin_layout Subsection
+给admin添加用户
+\end_layout
+
+\begin_layout Standard
+切换到admin库:use admin
+\end_layout
+
+\begin_layout Standard
+添加admin用户:db.addUser(“root”,”admin”)
+\end_layout
+
+\begin_layout Standard
+注意：必须先给admin库添加用户,否则就算给具体的库添加了用户,后续进入依然能操作具体库.
+\end_layout
+
+\begin_layout Standard
+因为默认admin库用户具有最高权限，相当于具体库需要认证时,进入的用户持有的是admin的权限,所以无需认证依然能进行操作.
+\end_layout
+
+\begin_layout Subsection
+给具体库添加用户
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+use openfire
+\end_layout
+
+\begin_layout Plain Layout
+
+db.addUser("openfire","password")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+重启mongo并在启动时配置需要认证
+\end_layout
+
+\begin_layout Standard
+方法一：退出重启并加上auth参数
+\end_layout
+
+\begin_layout Standard
+./bin/mongod -f conf/conf.properties –auth(注意是两个-)
+\end_layout
+
+\begin_layout Standard
+方法二:修改配置文件,加上参数(推荐)
+\end_layout
+
+\begin_layout Standard
+auth=true
+\end_layout
+
+\begin_layout Subsection
+测试权限
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>use openfire
+\end_layout
+
+\begin_layout Plain Layout
+
+>db.MySecondCollection.findOne();
+\end_layout
+
+\begin_layout Plain Layout
+
+Sat Mar 19 14:04:55.653 error: {
+\end_layout
+
+\begin_layout Plain Layout
+
+"$err" : "not authorized for query on openfire.MySecondCollection",
+\end_layout
+
+\begin_layout Plain Layout
+
+"code" : 16550
+\end_layout
+
+\begin_layout Plain Layout
+
+} at src/mongo/shell/query.js:128
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+4.认证并操作
+\end_layout
+
+\begin_layout Standard
+//此处应该设置成更加恰当的用户名及密码
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> db.auth("openfire","password")
+\end_layout
+
+\begin_layout Plain Layout
+
+1
+\end_layout
+
+\begin_layout Plain Layout
+
+> db.MySecondCollection.findOne()
+\end_layout
+
+\begin_layout Plain Layout
+
+{ "_id" : ObjectId("56ecde0662552d15c443dd4a"), "name" : "ming" }
+\end_layout
+
+\begin_layout Plain Layout
+
+>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+5.另一种方法认证
+\end_layout
+
+\begin_layout Standard
+在进入mongo时候加上数据库及用户名、密码
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+./bin/mongo openfire -uopenfire -ppassword
+\end_layout
+
+\begin_layout Plain Layout
+
+root@test:/opt/mongotest/single/mongo# ./bin/mongo openfire -uopenfire -ppassword
+\end_layout
+
+\begin_layout Plain Layout
+
+MongoDB shell version: 2.4.6
+\end_layout
+
+\begin_layout Plain Layout
+
+connecting to: openfire
+\end_layout
+
+\begin_layout Plain Layout
+
+> db
+\end_layout
+
+\begin_layout Plain Layout
+
+openfire
+\end_layout
+
+\begin_layout Plain Layout
+
+> db.MySecondCollection.findOne()
+\end_layout
+
+\begin_layout Plain Layout
+
+{ "_id" : ObjectId("56ecde0662552d15c443dd4a"), "name" : "ming" }
+\end_layout
+
+\begin_layout Plain Layout
+
+>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
