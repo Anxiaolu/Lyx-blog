@@ -1,0 +1,293 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+解决Linux上GLIBC_2.14 not found等glibc动态库不匹配问题
+\end_layout
+
+\begin_layout Standard
+最近写一个spring+mongo的一个小项目,本来写完了要往自己的云虚拟主机上部署,忘记之后换成了centos7.0的版本后,不少东西不兼容,还要手动修改,其中
+mongo就是.
+\end_layout
+
+\begin_layout Section*
+描述
+\end_layout
+
+\begin_layout Standard
+在刚要运行mongod进程时,出现如下错误:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+./bin/mongo: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by ./bin/mong
+o)
+\end_layout
+
+\begin_layout Plain Layout
+
+./bin/mongo: /lib64/libc.so.6: version `GLIBC_2.15' not found (required by ./bin/mong
+o)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根本原因:需要的glibc版本的动态库找不到(因为mongo是c++写的).
+\end_layout
+
+\begin_layout Standard
+查看了一下系统兼容的版本:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[root@iZwz9cef1b1l72zfjw2lgkZ ~]# strings /lib64/libc.so.6 | grep GLIBC_
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.2.5
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.2.6
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.3
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.3.2
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.3.3
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.3.4
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.4
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.5
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.6
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.7
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.8
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.9
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.10
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.11
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_2.12
+\end_layout
+
+\begin_layout Plain Layout
+
+GLIBC_PRIVATE
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+[root@iZwz9cef1b1l72zfjw2lgkZ MongoDB]# rpm -qa | grep glibc
+\end_layout
+
+\begin_layout Plain Layout
+
+glibc-2.12-1.209.el6_9.1.x86_64
+\end_layout
+
+\begin_layout Plain Layout
+
+glibc-headers-2.12-1.209.el6_9.1.x86_64
+\end_layout
+
+\begin_layout Plain Layout
+
+glibc-common-2.12-1.209.el6_9.1.x86_64
+\end_layout
+
+\begin_layout Plain Layout
+
+glibc-devel-2.12-1.209.el6_9.1.x86_64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+很可怜,只到2.12版本.
+\end_layout
+
+\begin_layout Standard
+从官网找到对应包下载(2.14,2.15版本相对教老,可以自行google下载),
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.gnu.org/software/libc/
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+下载解压后,在glibc-2.14目录下建立build目录,进入之后直接运行config然后编译安装,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[root@iZwz9cef1b1l72zfjw2lgkZ build]# ../configure  --prefix=/opt/glibc-2.14
+\end_layout
+
+\begin_layout Plain Layout
+
+[root@iZwz9cef1b1l72zfjw2lgkZ build]make && make install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
