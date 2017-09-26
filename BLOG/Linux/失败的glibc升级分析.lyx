@@ -1,0 +1,276 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+失败的glibc升级分析
+\end_layout
+
+\begin_layout Standard
+因为是覆盖安装,结果系统几乎不能用了。所以在这里给出正确的步骤：
+\end_layout
+
+\begin_layout Standard
+关于gcc、glibc和binutils模块之间的关系，以及在现有系统上如何升级的总结
+\end_layout
+
+\begin_layout Section*
+关于gcc、glibc和binutils模块之间的关系
+\end_layout
+
+\begin_layout Standard
+1、gcc（gnu collect compiler）是一组编译工具的总称。它主要完成的工作任务是“预处理”和“编译”，以及提供了与编译器紧密相关的运行库的支持
+，如libgcc_s.so、libstdc++.so等。
+\end_layout
+
+\begin_layout Standard
+2、binutils提供了一系列用来创建、管理和维护二进制目标文件的工具程序，如汇编（as）、连接（ld）、静态库归档（ar）、反汇编objdump）、elf结
+构分析工具（readelf）、无效调试信息和符号的工具（strip）等。通常，binutils与gcc是紧密相集成的，没有binutils的话，gcc是不能正常
+工作的。
+\end_layout
+
+\begin_layout Standard
+3、glibc是gnu发布的libc库，也即c运行库。glibc是linux系统中最底层的api（应用程序开发接口），几乎其它任何的运行库都会倚赖于glibc。
+glibc除了封装linux操作系统所提供的系统服务外，它本身也提供了许多其它一些必要功能服务的实现，主要的如下：
+\end_layout
+
+\begin_layout Standard
+（1）string，字符串处理
+\end_layout
+
+\begin_layout Standard
+（2）signal，信号处理
+\end_layout
+
+\begin_layout Standard
+（3）dlfcn，管理共享库的动态加载
+\end_layout
+
+\begin_layout Standard
+（4）direct，文件目录操作
+\end_layout
+
+\begin_layout Standard
+（5）elf，共享库的动态加载器，也即interpreter
+\end_layout
+
+\begin_layout Standard
+（6）iconv，不同字符集的编码转换
+\end_layout
+
+\begin_layout Standard
+（7）inet，socket接口的实现
+\end_layout
+
+\begin_layout Standard
+（8）intl，国际化，也即gettext的实现
+\end_layout
+
+\begin_layout Standard
+（9）io
+\end_layout
+
+\begin_layout Standard
+（10）linuxthreads
+\end_layout
+
+\begin_layout Standard
+（11）locale，本地化
+\end_layout
+
+\begin_layout Standard
+（12）login，虚拟终端设备的管理，及系统的安全访问
+\end_layout
+
+\begin_layout Standard
+（13）malloc，动态内存的分配与管理
+\end_layout
+
+\begin_layout Standard
+（14）nis
+\end_layout
+
+\begin_layout Standard
+（15）stdlib，其它基本功能
+\end_layout
+
+\begin_layout Section*
+在现有系统上如何升级（redhat9上实践的）
+\end_layout
+
+\begin_layout Standard
+1、升级这些库时，最好不要覆盖系统中缺省的；因为这些库，尤其是glibc库，是系统中最核心的共享库和工具，如果盲目覆盖，很可能导致整个系统瘫痪，因为一般更新gl
+ibc库时，其它所有以来libc库的共享库都需要重新被编译一遍。因此，为了调试某个程序进入glibc时，最好把glibc安装到/usr/local/lib下。
+\end_layout
+
+\begin_layout Standard
+2、首先编译glibc库。注意最好令建立一个glibc-build的目录，configure时加上--enable-add-ons=linuxthreads选项
+。make install安装到/usr/local下。
+\end_layout
+
+\begin_layout Standard
+3、修改gcc的spec文件（/usr/lib/gcc-lib/i386-redhat-linux/3.2.2/specs），更改ld-linux.so.2为/usr/
+local/lib下的新的共享库装载器。
+\end_layout
+
+\begin_layout Standard
+4、编译binutils库，此时被编译出的程序会连接到/usr/local/lib下的新的libc库。注意，在configure前，需要
+\end_layout
+
+\begin_layout Standard
+设置ld缺省连接的路径（LIBRARY_PATH=/usr/local/lib:/lib:/usr/lib），否则binutils会configure出错，找不
+到libc中的一些符号。具体步骤如下：
+\end_layout
+
+\begin_layout Standard
+（1）export LIBRARY_PATH=/usr/local/lib:/lib:/usr/lib
+\end_layout
+
+\begin_layout Standard
+（2）mkdir binutils-build && cd binutils-build
+\end_layout
+
+\begin_layout Standard
+（3）../binutils-2.13.90.0.18/configure
+\end_layout
+
+\begin_layout Standard
+（4）make
+\end_layout
+
+\begin_layout Standard
+（5）make -C ld clean
+\end_layout
+
+\begin_layout Standard
+（6）make -C ld LIB_PATH=/usr/lib:/lib:/usr/local/bin（设置编译后的ld的缺省库搜索路径，后面的比前面的优先级高
+）
+\end_layout
+
+\begin_layout Standard
+（7）make install
+\end_layout
+
+\begin_layout Section*
+总结
+\end_layout
+
+\begin_layout Standard
+1、运行时，动态库的装载依赖于ld-linux.so.6的实现，它查找共享库的顺序如下：
+\end_layout
+
+\begin_layout Standard
+（1）ld-linux.so.6在可执行的目标文件中被指定，可用readelf命令查看
+\end_layout
+
+\begin_layout Standard
+（2）ld-linux.so.6缺省在/usr/lib和lib中搜索；当glibc安装到/usr/local下时，它查找/usr/local/lib
+\end_layout
+
+\begin_layout Standard
+（3）LD_LIBRARY_PATH环境变量中所设定的路径
+\end_layout
+
+\begin_layout Standard
+（4）/etc/ld.so.conf（或/usr/local/etc/ld.so.conf）中所指定的路径，由ldconfig生成二进制的ld.so.cache中
+\end_layout
+
+\begin_layout Standard
+2、编译时，搜索库的路径顺序如下：
+\end_layout
+
+\begin_layout Standard
+（1）ld-linux.so.6由gcc的spec文件中所设定
+\end_layout
+
+\begin_layout Standard
+（2）gcc --print-search-dirs所打印出的路径，主要是libgcc_s.so等库。可以通过GCC_EXEC_PREFIX来设定
+\end_layout
+
+\begin_layout Standard
+（3）LIBRARY_PATH环境变量中所设定的路径，或编译的命令行中指定的-L/usr/local/lib 
+\end_layout
+
+\begin_layout Standard
+（2）binutils中的ld所设定的缺省搜索路径顺序，编译binutils时指定。（可以通过“ld --verbose | grep SEARCH”来查看）
+\end_layout
+
+\begin_layout Standard
+3、二进制程序的搜索路径顺序为PATH环境变量中所设定。一般/usr/local/bin高于/usr/bin
+\end_layout
+
+\begin_layout Standard
+4、编译时的头文件的搜索路径顺序，与library的查找顺序类似。一般/usr/local/include高于/usr/include
+\end_layout
+
+\end_body
+\end_document
