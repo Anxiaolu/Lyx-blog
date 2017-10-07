@@ -1,0 +1,481 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+关于Json格式中时间格式转化问题
+\end_layout
+
+\begin_layout Standard
+如果不经转化修改,一般情况下json时间格式一般是如下格式:
+\end_layout
+
+\begin_layout Standard
+Date(1436595149269)
+\end_layout
+
+\begin_layout Standard
+通常我们用ajax获取下来的json数据,如果有时间,都是这种格式.其中的数字表示的是1970年1月1日至今的毫秒数.
+\end_layout
+
+\begin_layout Standard
+针对如上有以下两种方式来解决:
+\end_layout
+
+\begin_layout Section*
+实现一:
+\end_layout
+
+\begin_layout Subsection*
+第一步:替换掉Date()
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//对外暴露的函数,替换掉/Date( )/
+\end_layout
+
+\begin_layout Plain Layout
+
+function convertTime(jsonTime, format) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    var date = new Date(parseInt(jsonTime.replace("/Date(", "").replace(")/",
+ ""), 10));
+\end_layout
+
+\begin_layout Plain Layout
+
+    var formatDate = date.format(format);
+\end_layout
+
+\begin_layout Plain Layout
+
+    return formatDate;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+第二步:将数字时间转换为可视化的yyyy-MM-dd HH:mm:ss的格式
+\end_layout
+
+\begin_layout Standard
+先扩展一下javascript的Date类型,增加一个函数,用于返回我们想要的 yyyy-MM-dd HH:mm:ss 这种时间格式
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Date.prototype.format = function (format) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    var date = {
+\end_layout
+
+\begin_layout Plain Layout
+
+        "M+": this.getMonth() + 1,
+\end_layout
+
+\begin_layout Plain Layout
+
+        "d+": this.getDate(),
+\end_layout
+
+\begin_layout Plain Layout
+
+        "h+": this.getHours(),
+\end_layout
+
+\begin_layout Plain Layout
+
+        "m+": this.getMinutes(),
+\end_layout
+
+\begin_layout Plain Layout
+
+        "s+": this.getSeconds(),
+\end_layout
+
+\begin_layout Plain Layout
+
+        "q+": Math.floor((this.getMonth() + 3) / 3),
+\end_layout
+
+\begin_layout Plain Layout
+
+        "S+": this.getMilliseconds()
+\end_layout
+
+\begin_layout Plain Layout
+
+    };
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (/(y+)/i.test(format)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4
+ - RegExp.$1.length));
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (var k in date) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        if (new RegExp("(" + k + ")").test(format)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+          format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k]
+ : ("00" + date[k]).substr(("" + date[k]).length));
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+    return format;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+示例:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$(function () {
+\end_layout
+
+\begin_layout Plain Layout
+
+    var dt = '/Date(1436595149269)/';
+\end_layout
+
+\begin_layout Plain Layout
+
+    var formatTime1 = convertTime(dt, "yyyy-MM-dd hh:mm:ss");//2015-07-11
+ 14:12:29
+\end_layout
+
+\begin_layout Plain Layout
+
+    $("#div1").text(formatTime1);
+\end_layout
+
+\begin_layout Plain Layout
+
+    var formatTime2 = convertTime(dt, "yyyy年MM月dd日 hh时mm分ss秒");//2015年07月11日
+ 14时12分29秒
+\end_layout
+
+\begin_layout Plain Layout
+
+    $("#div2").text(formatTime2);
+\end_layout
+
+\begin_layout Plain Layout
+
+})
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+另一种方式:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<!doctype html>
+\end_layout
+
+\begin_layout Plain Layout
+
+<html>
+\end_layout
+
+\begin_layout Plain Layout
+
+<head>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <title>JSON时间格式化(/Date()转换为yyyy-MM-dd HH:mm:ss)</title>
+\end_layout
+
+\begin_layout Plain Layout
+
+</head>
+\end_layout
+
+\begin_layout Plain Layout
+
+<body>
+\end_layout
+
+\begin_layout Plain Layout
+
+<script>
+\end_layout
+
+\begin_layout Plain Layout
+
+//yyyy-MM-dd HH:mm:SS
+\end_layout
+
+\begin_layout Plain Layout
+
+function getDateTime(date) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    var year = date.getFullYear();
+\end_layout
+
+\begin_layout Plain Layout
+
+    var month = date.getMonth() + 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+    var day = date.getDate();
+\end_layout
+
+\begin_layout Plain Layout
+
+    var hh = date.getHours();
+\end_layout
+
+\begin_layout Plain Layout
+
+    var mm = date.getMinutes();
+\end_layout
+
+\begin_layout Plain Layout
+
+    var ss = date.getSeconds();
+\end_layout
+
+\begin_layout Plain Layout
+
+    return year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" +
+ ss;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+//调用的是这个方法
+\end_layout
+
+\begin_layout Plain Layout
+
+function ConvertJSONDateToJSDate(jsondate) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    var date = new Date(parseInt(jsondate.replace("/Date(", "").replace(")/",
+ ""), 10));
+\end_layout
+
+\begin_layout Plain Layout
+
+    return date;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+var date = "/Date(1379944571737)/";
+\end_layout
+
+\begin_layout Plain Layout
+
+alert(getDateTime(ConvertJSONDateToJSDate(date)));
+\end_layout
+
+\begin_layout Plain Layout
+
+</script>
+\end_layout
+
+\begin_layout Plain Layout
+
+</body>
+\end_layout
+
+\begin_layout Plain Layout
+
+</html>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
