@@ -1,0 +1,171 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Jquery获取动态生成的元素及其相关问题
+\end_layout
+
+\begin_layout Section*
+前序
+\end_layout
+
+\begin_layout Standard
+针对于javaWeb开发人员,很多时候都会跟前端开发打交道.尤其是做面向接口开发的时候,真对于对后台进行ajax请求,将请求到的数据动态加载到页面上的时候,就需要
+我们用Js/Jquery来将数据动态展示到前台的模板页面上.这时候就会面临这么一个问题,就是很多时候会对动态填充的元素节点进行事件绑定,但是会发现undefine
+d.
+\end_layout
+
+\begin_layout Section*
+问题解决
+\end_layout
+
+\begin_layout Standard
+真对如上问题,jquery给出的解决办法是,使用live()(1.9版本之前,不包含1.9版本),on().
+\end_layout
+
+\begin_layout Standard
+live() 方法为被选元素附加一个或多个事件处理程序，并规定当这些事件发生时运行的函数。通过 live() 方法附加的事件处理程序适用于匹配选择器的当前及未来
+的元素（比如由脚本创建的新元素）。
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$(selector).live(event,data,function)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以下是对live参数的解析
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/Js_Jquery/Jquery_liveSelect_param.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+live()和对已有的元素进行事件绑定的bind()的区别在于live()不仅可以给页面中存在元素绑定,还可以给将来动态添加进来的元素进行事件绑定.两者是包含关系.
+\end_layout
+
+\begin_layout Subsection*
+on()的使用
+\end_layout
+
+\begin_layout Standard
+on()方法是在被选元素上添加一个或多个事件处理程序,从jquery1.7版本on()方法是bind(),live()和delegate()方法的新的替代品.如果在
+1.9版本之后的jquery中还使用live(),会报出错误：TypeError: $(...).live is not a function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$(seletor).on(event,childerSelector,data,function,map)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../../imgs/Js_Jquery/Jquery_on_param.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
